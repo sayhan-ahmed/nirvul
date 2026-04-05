@@ -40,15 +40,17 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <main className="relative z-10 container mx-auto px-4 sm:px-6 pt-24 md:pt-40 pb-44 md:pb-32 text-center flex flex-col items-center">
+      <main className={`relative z-10 container mx-auto px-4 sm:px-6 text-center flex flex-col items-center transition-all duration-500 ${
+        user ? 'pt-32 md:pt-40 pb-24 md:pb-32' : 'pt-12 md:pt-14 pb-24 md:pb-32'
+      }`}>
         <div className="inline-block mb-6 md:mb-8 px-6 py-2.5 rounded-full bg-[#154D57]/5 text-[#154D57] shadow-sm border border-[#154D57]/20">
           <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em]">
-            The Ultimate SSC MCQ Platform
+            The Ultimate MCQ Practice Platform
           </p>
         </div>
 
         <h1 className="text-5xl sm:text-6xl md:text-8xl font-black mb-6 md:mb-8 leading-[1.15] tracking-tight text-[#154D57]">
-          এসএসসি পরীক্ষার <br className="hidden sm:block" />
+          এমসিকিউ পরীক্ষার <br className="hidden sm:block" />
           <span className="text-[#1C2321]">
             পূর্ণাঙ্গ প্রস্তুতি
           </span>
@@ -73,7 +75,9 @@ export default function Home() {
       </main>
 
       {/* Features Showcase */}
-      <section className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 pb-44 md:pb-32">
+      <section className={`relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 transition-all duration-500 ${
+        user ? 'pb-44 md:pb-32' : 'pb-24 md:pb-32'
+      }`}>
         <div className="grid md:grid-cols-3 gap-6 md:gap-8">
           <div className="bg-[#FEFAF7] rounded-4xl p-10 hover:-translate-y-2 transition-all duration-300 shadow-[0_15px_40px_rgba(21,77,87,0.08)] border border-[#154D57]/20 group hover:border-[#1C2321]">
             <div className="w-16 h-16 bg-[#154D57] rounded-2xl flex items-center justify-center mb-8 text-[#FEFAF7] shadow-md transition-colors group-hover:bg-[#1C2321]">

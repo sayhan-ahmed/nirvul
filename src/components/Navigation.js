@@ -11,7 +11,9 @@ import {
   FiChevronDown,
   FiLayout,
   FiLogOut,
+  FiSearch
 } from "react-icons/fi";
+import Link from "next/link";
 
 const NAV_ITEMS = [
   {
@@ -21,7 +23,7 @@ const NAV_ITEMS = [
   },
   {
     path: "/tests",
-    label: "Tests",
+    label: "All Tests",
     icon: <FiFileText className="w-5 h-5" />,
   },
   {
@@ -64,8 +66,41 @@ export default function Navigation() {
 
   if (!user) return null;
 
+  const today = new Date().toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short'
+  });
+
   return (
     <>
+      {/* ======= MOBILE TOP HEADER (Premium) ======= */}
+      <div className="md:hidden fixed top-0 left-0 w-full z-100 bg-white px-6 py-4 flex items-center border-b border-gray-100 shadow-sm">
+        {/* Profile Pic (Left) */}
+        <Link href="/dashboard" className="w-12 h-12 rounded-full overflow-hidden shadow-sm bg-gray-50 border border-gray-100 shrink-0">
+          {user.photoURL ? (
+            <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full bg-[#154D57] flex items-center justify-center text-[#FEFAF7]">
+              <FiUser className="w-7 h-7" />
+            </div>
+          )}
+        </Link>
+
+        {/* Text Area (Centered) */}
+        <div className="flex-1 flex flex-col items-center justify-center text-center">
+          <h2 className="text-[#1A1A1A] text-xl font-extrabold tracking-tight leading-none mb-1.5">
+            Hello, {user.displayName?.split(' ')[0] || "User"}
+          </h2>
+          <p className="text-gray-400 text-md font-medium tracking-tight">
+            Today {today}.
+          </p>
+        </div>
+        
+        {/* Search Icon (Right) */}
+        <button className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center text-gray-800 transition-colors hover:bg-gray-50 shrink-0">
+          <FiSearch className="w-6 h-6 stroke-[1.5]" />
+        </button>
+      </div>
       {/* ======= DESKTOP NAVIGATION ======= */}
       <div className="hidden md:flex fixed top-8 left-0 w-full px-8 justify-center z-100">
         <div className="w-full max-w-6xl bg-[#FEFAF7] p-2 rounded-full flex items-center justify-between shadow-[0_15px_30px_rgba(21,77,87,0.06)] border border-[#154D57]/20 relative">
@@ -93,7 +128,7 @@ export default function Navigation() {
                     className={`font-bold text-base transition-all duration-300 px-6 py-2.5 rounded-full ${
                       isActive
                         ? "bg-[#154D57]/10 text-[#154D57]"
-                        : "text-[#154D57]/60 hover:text-[#154D57] hover:bg-[#1C2321]/5"
+                        : "text-[#154D57]/80 hover:text-[#154D57] hover:bg-[#1C2321]/5"
                     }`}
                   >
                     {item.label}
@@ -105,19 +140,25 @@ export default function Navigation() {
 
           {/* Right Side: Profile Dropdown */}
           <div className="relative" ref={dropdownRef}>
-            <button 
+            <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="bg-[#154D57] pl-3 pr-5 py-2 rounded-full shadow-lg text-base font-bold text-[#FEFAF7] flex items-center gap-3 cursor-pointer hover:bg-[#1C2321] transition-colors group"
             >
               {user.photoURL ? (
-                <img src={user.photoURL} alt="Profile" className="w-8 h-8 rounded-full border border-[#FEFAF7]/20 object-cover" />
+                <img
+                  src={user.photoURL}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full border border-[#FEFAF7]/20 object-cover"
+                />
               ) : (
                 <div className="bg-[#FEFAF7] p-2 rounded-full text-[#154D57] group-hover:text-[#1A1A1B] transition-colors">
                   <FiUser className="w-4 h-4" />
                 </div>
               )}
               <span>{user.displayName || "Student"}</span>
-              <FiChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              <FiChevronDown
+                className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? "rotate-180" : ""}`}
+              />
             </button>
 
             {/* Dropdown Menu */}
@@ -150,7 +191,7 @@ export default function Navigation() {
       {/* ======= MOBILE NAVIGATION ======= */}
       <div className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-center">
         <div className="bg-transparent relative pb-5 px-6 pt-3 w-full max-w-[24rem]">
-          <div className="relative bg-[#1C2321] h-14 rounded-4xl flex items-center justify-around shadow-2xl overflow-visible border border-[#154D57]/10">
+          <div className="relative bg-[#1C2321] h-14 w-full rounded-4xl flex items-center justify-around shadow-2xl overflow-visible border border-[#154D57]/10">
             {[
               ...NAV_ITEMS,
               {
