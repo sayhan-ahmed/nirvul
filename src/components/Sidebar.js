@@ -11,7 +11,6 @@ import {
   FiSettings, 
   FiMessageSquare,
   FiLogOut,
-  FiArrowLeft
 } from "react-icons/fi";
 import Link from "next/link";
 
@@ -26,17 +25,17 @@ export default function Sidebar() {
 
   const NAV_ITEMS = isAdmin ? [
     { id: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: <FiLayout className="w-5 h-5" /> },
-    { id: 'questions', label: 'Questions', path: '/admin/questions', icon: <FiBookOpen className="w-5 h-5" /> },
-    { id: 'subjects', label: 'Subjects', path: '/admin/subjects', icon: <FiFileText className="w-5 h-5" /> },
-    { id: 'users', label: 'Members', path: '/admin/users', icon: <FiUsers className="w-5 h-5" /> },
-    { id: 'stats', label: 'Statistics', path: '/admin/stats', icon: <FiPieChart className="w-5 h-5" /> },
-    { id: 'settings', label: 'Settings', path: '/admin/settings', icon: <FiSettings className="w-5 h-5" /> },
+    { id: 'questions', label: 'Questions', path: '/admin/questions', icon: <FiBookOpen className="w-5 h-5" />, disabled: true },
+    { id: 'subjects', label: 'Subjects', path: '/admin/subjects', icon: <FiFileText className="w-5 h-5" />, disabled: true },
+    { id: 'users', label: 'Students', path: '/admin/users', icon: <FiUsers className="w-5 h-5" />, disabled: true },
+    { id: 'stats', label: 'Statistics', path: '/admin/stats', icon: <FiPieChart className="w-5 h-5" />, disabled: true },
+    { id: 'settings', label: 'Settings', path: '/admin/settings', icon: <FiSettings className="w-5 h-5" />, disabled: true },
   ] : [
     { id: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: <FiLayout className="w-5 h-5" /> },
-    { id: 'tests', label: 'My Tests', path: '/tests', icon: <FiBookOpen className="w-5 h-5" /> },
-    { id: 'results', label: 'Results', path: '/results', icon: <FiPieChart className="w-5 h-5" /> },
+    { id: 'tests', label: 'Take a Test', path: '/tests', icon: <FiBookOpen className="w-5 h-5" /> },
+    { id: 'results', label: 'Results', path: '/results', icon: <FiPieChart className="w-5 h-5" />, disabled: true },
     { id: 'suggestions', label: 'Suggestions', path: '/suggestions', icon: <FiMessageSquare className="w-5 h-5" /> },
-    { id: 'profile', label: 'My Profile', path: '/profile', icon: <FiSettings className="w-5 h-5" /> },
+    { id: 'profile', label: 'My Profile', path: '/profile', icon: <FiSettings className="w-5 h-5" />, disabled: true },
   ];
 
   const handleLogout = async () => {
@@ -63,17 +62,23 @@ export default function Sidebar() {
           return (
             <Link
               key={item.id}
-              href={item.path}
-              className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all group ${
+              href={item.disabled ? '#' : item.path}
+              onClick={(e) => item.disabled && e.preventDefault()}
+              className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold transition-all group relative overflow-hidden ${
                 isActive 
                   ? 'bg-[#154D57] text-white shadow-xl shadow-[#154D57]/20 scale-105' 
+                  : item.disabled
+                  ? 'text-gray-300 cursor-not-allowed opacity-40'
                   : 'text-gray-400 hover:bg-[#154D57]/5 hover:text-[#154D57]'
               }`}
             >
-              <div className={`${isActive ? 'text-white' : 'text-[#154D57]/40 group-hover:text-[#154D57]'}`}>
+              <div className={`${isActive ? 'text-white' : item.disabled ? 'text-gray-300' : 'text-[#154D57]/40 group-hover:text-[#154D57]'}`}>
                 {item.icon}
               </div>
-              <span className="text-sm">{item.label}</span>
+              <span className="text-sm flex-1">{item.label}</span>
+              {item.disabled && (
+                <span className="text-[8px] font-black uppercase tracking-widest bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded">Soon</span>
+              )}
             </Link>
           );
         })}

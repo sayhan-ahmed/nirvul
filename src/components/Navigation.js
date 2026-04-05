@@ -64,9 +64,8 @@ export default function Navigation() {
     router.push("/");
   };
 
-  const isDashboardRoute = pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/tests') || pathname.startsWith('/results') || pathname.startsWith('/profile');
-
-  if (!user || isDashboardRoute) return null;
+  const hideOnRoutes = ["/dashboard"];
+  if (!user || hideOnRoutes.includes(pathname)) return null;
 
   const today = new Date().toLocaleDateString("en-GB", {
     day: "numeric",

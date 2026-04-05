@@ -1,11 +1,5 @@
 import {
-  FiPlus,
-  FiUsers,
-  FiBook,
-  FiPieChart,
-  FiUser,
   FiArrowRight,
-  FiActivity,
   FiBookOpen,
   FiSearch,
   FiChevronDown,
@@ -33,13 +27,17 @@ export default function AdminDashboard({ user }) {
           </div>
           <div className="grid grid-cols-2 gap-3 md:gap-4">
             <div className="bg-white/5 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-sm border border-white/10">
-              <h4 className="text-xl md:text-2xl font-black mb-0.5 md:mb-1">1.209</h4>
+              <h4 className="text-xl md:text-2xl font-black mb-0.5 md:mb-1">
+                1.209
+              </h4>
               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-white/40">
                 Active Students
               </p>
             </div>
             <div className="bg-white/5 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-sm border border-white/10">
-              <h4 className="text-xl md:text-2xl font-black mb-0.5 md:mb-1">340</h4>
+              <h4 className="text-xl md:text-2xl font-black mb-0.5 md:mb-1">
+                340
+              </h4>
               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-white/40">
                 Active Courses
               </p>
@@ -51,24 +49,114 @@ export default function AdminDashboard({ user }) {
       {/* --- Middle Content (Skill Graph) --- */}
       <div className="lg:col-span-1 bg-white rounded-4xl md:rounded-[2.5rem] p-6 md:p-10 border border-[#154D57]/5 shadow-sm flex flex-col items-center justify-center">
         <div className="w-full mb-6">
-          <h3 className="text-lg md:text-xl font-black text-[#154D57]">Skill Graph</h3>
+          <h3 className="text-lg md:text-xl font-black text-[#154D57]">
+            Skill Graph
+          </h3>
           <p className="text-gray-400 text-[10px] md:text-xs font-bold">
             Latest performance overview
           </p>
         </div>
         <div className="relative w-full aspect-square flex items-center justify-center">
-          <svg viewBox="0 0 100 100" className="w-full max-w-[200px] md:max-w-[240px]">
-            <polygon points="50,5 95,35 77,90 23,90 5,35" fill="none" stroke="#154D57" strokeWidth="0.5" strokeOpacity="0.1" />
-            <polygon points="50,20 80,42 67,80 33,80 20,42" fill="none" stroke="#154D57" strokeWidth="0.5" strokeOpacity="0.1" />
-            <line x1="50" y1="50" x2="50" y2="5" stroke="#154D57" strokeWidth="0.5" strokeOpacity="0.1" />
-            <line x1="50" y1="50" x2="95" y2="35" stroke="#154D57" strokeWidth="0.5" strokeOpacity="0.1" />
-            <line x1="50" y1="50" x2="77" y2="90" stroke="#154D57" strokeWidth="0.5" strokeOpacity="0.1" />
-            <line x1="50" y1="50" x2="23" y2="90" stroke="#154D57" strokeWidth="0.5" strokeOpacity="0.1" />
-            <line x1="50" y1="50" x2="5" y2="35" stroke="#154D57" strokeWidth="0.5" strokeOpacity="0.1" />
-            <polygon points="50,15 85,40 70,85 40,75 15,30" fill="#154D57" fillOpacity="0.1" stroke="#154D57" strokeWidth="1.5" />
-            <text x="50" y="2" textAnchor="middle" fontSize="3" fontWeight="bold" fill="#154D57">Intro to IS: 15</text>
-            <text x="96" y="35" textAnchor="start" fontSize="3" fontWeight="bold" fill="#154D57">Analysis: 18</text>
-            <text x="5" y="35" textAnchor="end" fontSize="3" fontWeight="bold" fill="#154D57">Web Dev: 17</text>
+          <svg
+            viewBox="0 0 100 100"
+            className="w-full max-w-[200px] md:max-w-[240px]"
+          >
+            <polygon
+              points="50,5 95,35 77,90 23,90 5,35"
+              fill="none"
+              stroke="#154D57"
+              strokeWidth="0.5"
+              strokeOpacity="0.1"
+            />
+            <polygon
+              points="50,20 80,42 67,80 33,80 20,42"
+              fill="none"
+              stroke="#154D57"
+              strokeWidth="0.5"
+              strokeOpacity="0.1"
+            />
+            <line
+              x1="50"
+              y1="50"
+              x2="50"
+              y2="5"
+              stroke="#154D57"
+              strokeWidth="0.5"
+              strokeOpacity="0.1"
+            />
+            <line
+              x1="50"
+              y1="50"
+              x2="95"
+              y2="35"
+              stroke="#154D57"
+              strokeWidth="0.5"
+              strokeOpacity="0.1"
+            />
+            <line
+              x1="50"
+              y1="50"
+              x2="77"
+              y2="90"
+              stroke="#154D57"
+              strokeWidth="0.5"
+              strokeOpacity="0.1"
+            />
+            <line
+              x1="50"
+              y1="50"
+              x2="23"
+              y2="90"
+              stroke="#154D57"
+              strokeWidth="0.5"
+              strokeOpacity="0.1"
+            />
+            <line
+              x1="50"
+              y1="50"
+              x2="5"
+              y2="35"
+              stroke="#154D57"
+              strokeWidth="0.5"
+              strokeOpacity="0.1"
+            />
+            <polygon
+              points="50,15 85,40 70,85 40,75 15,30"
+              fill="#154D57"
+              fillOpacity="0.1"
+              stroke="#154D57"
+              strokeWidth="1.5"
+            />
+            <text
+              x="50"
+              y="2"
+              textAnchor="middle"
+              fontSize="3"
+              fontWeight="bold"
+              fill="#154D57"
+            >
+              Intro to IS: 15
+            </text>
+            <text
+              x="96"
+              y="35"
+              textAnchor="start"
+              fontSize="3"
+              fontWeight="bold"
+              fill="#154D57"
+            >
+              Analysis: 18
+            </text>
+            <text
+              x="5"
+              y="35"
+              textAnchor="end"
+              fontSize="3"
+              fontWeight="bold"
+              fill="#154D57"
+            >
+              Web Dev: 17
+            </text>
           </svg>
         </div>
       </div>
@@ -85,20 +173,45 @@ export default function AdminDashboard({ user }) {
         </div>
         <div className="space-y-5 md:space-y-6">
           {[
-            { name: "Budiarti rohman", score: 96, color: "bg-purple-100 text-purple-600" },
-            { name: "Ningrum Lea", score: 85, color: "bg-blue-100 text-blue-600" },
-            { name: "Michael mart", score: 54, color: "bg-orange-100 text-orange-600" },
-            { name: "Fikrie tonic", score: 30, color: "bg-red-100 text-red-600" },
-            { name: "Lucky Minals", score: 20, color: "bg-gray-100 text-gray-600" },
+            {
+              name: "Budiarti rohman",
+              score: 96,
+              color: "bg-purple-100 text-purple-600",
+            },
+            {
+              name: "Ningrum Lea",
+              score: 85,
+              color: "bg-blue-100 text-blue-600",
+            },
+            {
+              name: "Michael mart",
+              score: 54,
+              color: "bg-orange-100 text-orange-600",
+            },
+            {
+              name: "Fikrie tonic",
+              score: 30,
+              color: "bg-red-100 text-red-600",
+            },
+            {
+              name: "Lucky Minals",
+              score: 20,
+              color: "bg-gray-100 text-gray-600",
+            },
           ].map((member, i) => (
-            <div key={i} className="flex items-center justify-between group cursor-pointer">
+            <div
+              key={i}
+              className="flex items-center justify-between group cursor-pointer"
+            >
               <div className="flex items-center gap-3 md:gap-4">
                 <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-100 border-2 border-white shadow-sm overflow-hidden group-hover:scale-110 transition-transform"></div>
                 <h4 className="text-xs md:text-sm font-bold text-[#154D57] group-hover:translate-x-1 transition-transform">
                   {member.name}
                 </h4>
               </div>
-              <span className={`text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 rounded-lg ${member.color}`}>
+              <span
+                className={`text-[8px] md:text-[10px] font-black px-2 md:px-3 py-1 rounded-lg ${member.color}`}
+              >
                 {member.score}
               </span>
             </div>
@@ -118,8 +231,14 @@ export default function AdminDashboard({ user }) {
         </div>
         <div className="h-48 md:h-64 flex items-end gap-3 md:gap-6 px-2 md:px-4">
           {[40, 70, 50, 90, 80, 60, 45].map((h, i) => (
-            <div key={i} className="flex-1 flex flex-col items-center gap-2 md:gap-3 group">
-              <div className="w-full bg-[#154D57]/5 rounded-t-lg md:rounded-t-xl relative overflow-hidden" style={{ height: "100%" }}>
+            <div
+              key={i}
+              className="flex-1 flex flex-col items-center gap-2 md:gap-3 group"
+            >
+              <div
+                className="w-full bg-[#154D57]/5 rounded-t-lg md:rounded-t-xl relative overflow-hidden"
+                style={{ height: "100%" }}
+              >
                 <div
                   className="absolute bottom-0 w-full bg-[#154D57] rounded-t-lg md:rounded-t-xl transition-all duration-1000 group-hover:brightness-125"
                   style={{ height: `${h}%` }}
