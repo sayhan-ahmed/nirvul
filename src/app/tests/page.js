@@ -108,16 +108,16 @@ export default function ExamPage() {
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  if (loading || !user) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading || !user) return <div className="min-h-screen flex items-center justify-center bg-[#FEFAF7] text-[#154D57] font-bold">Loading...</div>;
 
   // View: Exam Result
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gray-50 py-10 px-4 flex justify-center items-start">
-        <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-3xl">
-          <div className="text-center mb-8 border-b pb-6">
-            <h1 className="text-4xl font-extrabold text-blue-600 mb-2">Exam Result</h1>
-            <p className="text-xl text-gray-700">You scored <span className="font-bold text-blue-600">{score}</span> out of {DUMMY_QUESTIONS.length}</p>
+      <div className="min-h-screen bg-[#FEFAF7] py-10 px-4 pt-32 pb-44 md:pb-28 flex justify-center items-start relative font-sans">
+        <div className="bg-[#FEFAF7] p-10 rounded-4xl shadow-[0_15px_40px_rgba(21,77,87,0.1)] w-full max-w-3xl border border-[#154D57]/20 relative z-10">
+          <div className="text-center mb-10 border-b border-[#154D57]/20 pb-8">
+            <h1 className="text-5xl font-black text-[#154D57] mb-3">Result</h1>
+            <p className="text-xl text-[#154D57]/70 font-semibold">You scored <span className="font-black text-[#154D57] text-3xl ml-2">{score}</span> <span className="text-sm">out of {DUMMY_QUESTIONS.length}</span></p>
           </div>
 
           <div className="space-y-6">
@@ -126,12 +126,12 @@ export default function ExamPage() {
               const isCorrect = selected === q.correctAnswer;
               
               return (
-                <div key={q._id} className={`p-5 rounded-xl border-l-4 ${isCorrect ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500'}`}>
-                  <h3 className="font-semibold text-lg text-gray-800 mb-3">{idx + 1}. {q.questionText}</h3>
-                  <div className="text-sm">
-                    <p className="mb-1 text-gray-600">Your Answer: <span className={`font-semibold ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>{selected || "Not Answered"}</span></p>
+                <div key={q._id} className={`p-6 rounded-2xl border-2 ${isCorrect ? 'bg-[#154D57]/10 border-[#154D57]/30' : 'bg-[#1C2321]/5 border-[#154D57]/20'} transition-all`}>
+                  <h3 className="font-bold text-lg text-[#154D57] mb-4">{idx + 1}. {q.questionText}</h3>
+                  <div className="text-sm font-medium">
+                    <p className="mb-2 text-[#154D57]/80">Your Answer: <span className={`font-bold px-3 py-1.5 rounded-md ${isCorrect ? 'bg-[#154D57]/20 text-[#154D57]' : 'bg-[#1C2321]/10 text-[#154D57]'}`}>{selected || "Not Answered"}</span></p>
                     {!isCorrect && (
-                      <p className="font-semibold text-green-600">Correct Answer: {q.correctAnswer}</p>
+                      <p className="text-[#154D57]/80 mt-3">Correct Answer: <span className="font-bold text-[#154D57] bg-[#154D57]/20 px-3 py-1.5 rounded-md">{q.correctAnswer}</span></p>
                     )}
                   </div>
                 </div>
@@ -139,9 +139,9 @@ export default function ExamPage() {
             })}
           </div>
 
-          <div className="mt-8 flex justify-center">
-            <Link href="/dashboard" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-bold shadow-lg transition">
-              Back to Dashboard
+          <div className="mt-12 flex justify-center">
+            <Link href="/dashboard" className="bg-[#154D57] hover:bg-[#1C2321] text-[#FEFAF7] px-10 py-4 rounded-full font-black text-lg shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 block">
+              Return to Dashboard
             </Link>
           </div>
         </div>
@@ -151,18 +151,18 @@ export default function ExamPage() {
 
   // View: Active Exam
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-[#FEFAF7] py-10 pt-32 pb-44 md:pb-28 px-4 font-sans text-[#154D57] relative">
+      <div className="max-w-3xl mx-auto relative z-10">
         
         {/* Header / Timer Component */}
-        <div className="sticky top-4 bg-white p-4 rounded-xl shadow-lg border-t-4 border-blue-600 flex justify-between items-center mb-8 z-10">
+        <div className="sticky top-28 md:top-36 bg-[#FEFAF7] p-6 rounded-4xl shadow-xl border border-[#154D57]/20 flex justify-between items-center mb-10 z-10">
           <div>
-            <h1 className="text-xl font-bold text-gray-800">Bangla 2nd Paper</h1>
-            <p className="text-sm text-gray-500">Student: {user.displayName}</p>
+            <h1 className="text-2xl font-black text-[#154D57]">Bangla 2nd Paper</h1>
+            <p className="text-sm text-[#154D57]/70 font-bold mt-1 tracking-wide">Candidate: {user.displayName}</p>
           </div>
-          <div className="bg-blue-50 px-5 py-2 rounded-lg flex items-center gap-3">
-             <svg className={`w-6 h-6 ${timeLeft < 60 ? 'text-red-500 animate-pulse' : 'text-blue-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-             <span className={`text-2xl font-black tracking-wider ${timeLeft < 60 ? 'text-red-500' : 'text-blue-700'}`}>
+          <div className={`px-6 py-3 rounded-xl flex items-center gap-3 transition-colors border ${timeLeft < 60 ? 'bg-[#1C2321]/10 border-[#1C2321]/30' : 'bg-[#154D57]/5 border-[#154D57]/20'}`}>
+             <svg className={`w-6 h-6 ${timeLeft < 60 ? 'text-[#1C2321] animate-pulse' : 'text-[#154D57]'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+             <span className={`text-2xl font-black tracking-widest ${timeLeft < 60 ? 'text-[#1C2321]' : 'text-[#154D57]'}`}>
                {formatTime(timeLeft)}
              </span>
           </div>
@@ -174,13 +174,13 @@ export default function ExamPage() {
             const hasAnswered = !!answers[q._id];
             
             return (
-              <div key={q._id} className={`bg-white p-6 rounded-2xl shadow-sm transition duration-300 ${hasAnswered ? 'border border-blue-100 ring-2 ring-blue-50 ring-opacity-50' : 'border border-gray-100'}`}>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex gap-2">
-                  <span className="text-blue-600">{idx + 1}.</span> 
+              <div key={q._id} className={`bg-[#FEFAF7] p-8 rounded-4xl transition duration-300 ${hasAnswered ? 'border border-[#154D57]/20 shadow-sm' : 'border border-[#154D57]/30 shadow-xl hover:border-[#154D57]'}`}>
+                <h3 className="text-xl font-bold text-[#154D57] mb-6 flex gap-3">
+                  <span className="text-[#1C2321] font-black">{idx + 1}.</span> 
                   {q.questionText}
                 </h3>
                 
-                <div className="grid sm:grid-cols-2 gap-3">
+                <div className="grid sm:grid-cols-2 gap-4">
                   {q.options.map((opt, oIdx) => {
                     const isSelected = answers[q._id] === opt;
                     
@@ -189,19 +189,19 @@ export default function ExamPage() {
                         key={oIdx}
                         disabled={hasAnswered}
                         onClick={() => handleSelectOption(q._id, opt)}
-                        className={`text-left p-4 rounded-xl border-2 transition-all duration-200 ${
+                        className={`text-left p-5 rounded-2xl border-2 transition-all duration-200 shadow-sm ${
                           isSelected 
-                            ? 'bg-blue-600 border-blue-600 text-white shadow-md transform scale-[1.02]' 
+                            ? 'bg-[#154D57] border-[#154D57] text-[#FEFAF7] transform scale-[1.02] shadow-md font-bold' 
                             : hasAnswered
-                              ? 'bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed opacity-70'
-                              : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+                              ? 'bg-[#FEFAF7] border-[#154D57]/20 text-[#154D57]/40 cursor-not-allowed opacity-60'
+                              : 'bg-[#FEFAF7] border-[#154D57]/40 text-[#154D57] hover:border-[#1C2321] font-bold hover:shadow-md'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 ${isSelected ? 'border-white' : 'border-gray-300'}`}>
-                            {isSelected && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
+                        <div className="flex items-center gap-4">
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 ${isSelected ? 'border-[#FEFAF7]' : 'border-[#154D57]/40'}`}>
+                            {isSelected && <div className="w-2.5 h-2.5 bg-[#FEFAF7] rounded-full"></div>}
                           </div>
-                          <span className="font-medium">{opt}</span>
+                          <span className="text-[1.05rem]">{opt}</span>
                         </div>
                       </button>
                     )
@@ -213,10 +213,10 @@ export default function ExamPage() {
         </div>
 
         {/* Submit Action */}
-        <div className="mt-12 text-center pb-20">
+        <div className="mt-14 text-center pb-20">
           <button 
             onClick={handleSubmit}
-            className="bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition transform hover:-translate-y-1"
+            className="bg-[#154D57] hover:bg-[#1C2321] text-[#FEFAF7] px-12 py-5 rounded-full font-black text-xl shadow-xl transition-all transform hover:-translate-y-1 block mx-auto"
           >
             Submit Exam
           </button>

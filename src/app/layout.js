@@ -12,6 +12,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+import Navigation from "@/components/Navigation";
+
 export const metadata = {
   title: "Nirvul",
   description: "MCQ Exam Application for SSC Students",
@@ -26,6 +28,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <AuthProvider>
           {children}
+          <Navigation />
         </AuthProvider>
       </body>
     </html>
