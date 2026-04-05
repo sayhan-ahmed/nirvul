@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Nirvul Exam",
+  title: "Nirvul",
   description: "MCQ Exam Application for SSC Students",
 };
 
