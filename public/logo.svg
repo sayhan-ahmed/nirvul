@@ -1,0 +1,6 @@
+<svg viewBox="0 0 200 200" fill="#154D57" xmlns="http://www.w3.org/2000/svg">
+   <path d="M 45 35 H 25 V 135 H 33 V 43 H 45 Z" />
+   <polygon points="45,35 75,35 105,165 45,165" />
+   <polygon points="95,35 155,35 155,165 125,165" />
+   <path d="M 155 165 H 175 V 65 H 167 V 157 H 155 Z" />
+</svg>

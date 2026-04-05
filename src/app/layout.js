@@ -17,6 +17,9 @@ import Navigation from "@/components/Navigation";
 export const metadata = {
   title: "Nirvul",
   description: "MCQ Exam Application for SSC Students",
+  icons: {
+    icon: '/logo.svg'
+  }
 };
 
 export default function RootLayout({ children }) {
