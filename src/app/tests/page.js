@@ -11,9 +11,10 @@ import {
   FiZap,
   FiLayers,
   FiCheckCircle,
+  FiGlobe,
 } from "react-icons/fi";
 
-// Mock Exam Data (Only Bangla 2nd is active)
+// Mock Exam Data
 const DUMMY_QUESTIONS = [
   {
     _id: "q1",
@@ -42,54 +43,105 @@ const DUMMY_QUESTIONS = [
 ];
 
 const CLASSES = [
-  { id: "class8", name: "Class 8", active: false },
-  { id: "class9", name: "Class 9", active: false },
-  { id: "ssc", name: "SSC (Class 10)", active: true },
-  { id: "hsc", name: "HSC (Class 11-12)", active: false },
+  { id: "9-10", name: "Class 9-10", active: true },
+  { id: "11-12", name: "Class 11-12", active: false },
   { id: "admission", name: "Admission", active: false },
 ];
 
-const SSC_COMMON_SUBJECTS = [
-  { id: "bangla1", name: "Bangla 1st", active: false },
-  { id: "bangla2", name: "Bangla 2nd", active: true },
-  { id: "english1", name: "English 1st", active: false },
-  { id: "english2", name: "English 2nd", active: false },
-  { id: "math", name: "General Math", active: false },
-  { id: "ict", name: "ICT", active: false },
+const VERSIONS = [
+  { id: "bangla", name: "Bangla Version", active: true },
+  { id: "english", name: "English Version", active: true },
 ];
 
-const GROUPS = [
-  { id: "science", name: "Science", active: true },
-  { id: "humanities", name: "Humanities", active: true },
-  { id: "commerce", name: "Business Studies", active: true },
-];
-
-const GROUP_SUBJECTS = {
-  science: [
-    { id: "physics", name: "Physics", active: false },
-    { id: "chemistry", name: "Chemistry", active: false },
-    { id: "biology", name: "Biology", active: false },
-    { id: "higher_math", name: "Higher Math", active: false },
-  ],
-  humanities: [
-    { id: "civics", name: "Civics", active: false },
-    { id: "geography", name: "Geography", active: false },
-    { id: "history", name: "History", active: false },
-  ],
-  commerce: [
-    { id: "accounting", name: "Accounting", active: false },
-    { id: "finance", name: "Finance", active: false },
-    { id: "management", name: "Business Ent.", active: false },
-  ],
+const SUBJECT_DATA = {
+  bangla: {
+    common: [
+      { id: "bangla1", name: "বাংলা ১ম পত্র", active: false },
+      { id: "bangla2", name: "বাংলা ২য় পত্র", active: true },
+      { id: "english1", name: "ইংরেজি ১ম পত্র", active: false },
+      { id: "english2", name: "ইংরেজি ২য় পত্র", active: false },
+      { id: "math", name: "গণিত", active: false },
+      { id: "ict", name: "তথ্য ও যোগাযোগ প্রযুক্তি", active: false },
+      { id: "religion", name: "ধর্ম ও নৈতিক শিক্ষা", active: false },
+      { id: "bgs", name: "বাংলাদেশ ও বিশ্বপরিচয়", active: false },
+    ],
+    groups: [
+      { id: "science", name: "বিজ্ঞান বিভাগ", active: true },
+      { id: "commerce", name: "ব্যবসায় শিক্ষা বিভাগ", active: true },
+      { id: "humanities", name: "মানবিক বিভাগ", active: true },
+    ],
+    groupSubjects: {
+      science: [
+        { id: "physics", name: "পদার্থবিজ্ঞান", active: false },
+        { id: "chemistry", name: "রসায়ন", active: false },
+        { id: "biology", name: "জীববিজ্ঞান", active: false },
+        { id: "higher_math", name: "উচ্চতর গণিত", active: false },
+      ],
+      commerce: [
+        { id: "accounting", name: "হিসাববিজ্ঞান", active: false },
+        { id: "bus_ent", name: "ব্যবসায় উদ্যোগ", active: false },
+        { id: "finance", name: "ফিন্যান্স ও ব্যাংকিং", active: false },
+      ],
+      humanities: [
+        { id: "civics", name: "পৌরনীতি ও নাগরিকতা", active: false },
+        {
+          id: "history",
+          name: "বাংলাদেশের ইতিহাস ও বিশ্বসভ্যতা",
+          active: false,
+        },
+        { id: "geography", name: "ভূগোল ও পরিবেশ", active: false },
+        { id: "economics", name: "অর্থনীতি", active: false },
+      ],
+    },
+  },
+  english: {
+    common: [
+      { id: "bangla1", name: "বাংলা ১ম পত্র", active: false },
+      { id: "bangla2", name: "বাংলা ২য় পত্র", active: true },
+      { id: "english1", name: "English 1st", active: false },
+      { id: "english2", name: "English 2nd", active: false },
+      { id: "math", name: "Mathematics", active: false },
+      { id: "ict", name: "ICT", active: false },
+      { id: "religion", name: "Religion and Moral Education", active: false },
+      { id: "bgs", name: "Bangladesh and Global Studies", active: false },
+    ],
+    groups: [
+      { id: "science", name: "Science", active: true },
+      { id: "commerce", name: "Business Studies", active: true },
+      { id: "humanities", name: "Humanities", active: true },
+    ],
+    groupSubjects: {
+      science: [
+        { id: "physics", name: "Physics", active: false },
+        { id: "chemistry", name: "Chemistry", active: false },
+        { id: "biology", name: "Biology", active: false },
+        { id: "higher_math", name: "Higher Math", active: false },
+      ],
+      commerce: [
+        { id: "accounting", name: "Accounting", active: false },
+        { id: "bus_ent", name: "Business Entrepreneurship", active: false },
+        { id: "finance", name: "Finance and Banking", active: false },
+      ],
+      humanities: [
+        { id: "civics", name: "Civics and Citizenship", active: false },
+        { id: "history", name: "History", active: false },
+        { id: "geography", name: "Geography and Environment", active: false },
+        { id: "economics", name: "Economics", active: false },
+      ],
+    },
+  },
 };
 
 export default function TestsPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // Navigation State
-  const [currentView, setCurrentView] = useState("CLASSES"); // CLASSES, SUBJECTS, EXAM, RESULT
-  const [selectedGroup, setSelectedGroup] = useState(null);
+  // Selection State
+  const [currentView, setCurrentView] = useState("CLASSES"); // CLASSES, VERSIONS, SUBJECTS, EXAM, RESULT
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [selectedVersion, setSelectedVersion] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState("science"); // Default to science
+  const [selectedSubject, setSelectedSubject] = useState(null);
 
   // Exam State
   const [answers, setAnswers] = useState({});
@@ -97,17 +149,14 @@ export default function TestsPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
-  // Authentication Check
+  // Auth Check
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/");
-    }
+    if (!loading && !user) router.push("/");
   }, [user, loading, router]);
 
-  // Timer Countdown Effect
+  // Timer Effect
   useEffect(() => {
     if (currentView !== "EXAM" || isSubmitted || timeLeft <= 0) return;
-
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -118,36 +167,18 @@ export default function TestsPage() {
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(timer);
   }, [timeLeft, isSubmitted, currentView]);
 
   // Handlers
-  const handleSelectOption = (questionId, option) => {
-    if (!answers[questionId]) {
-      setAnswers((prev) => ({
-        ...prev,
-        [questionId]: option,
-      }));
-    }
-  };
-
   const calculateResults = () => {
     let currentScore = 0;
     DUMMY_QUESTIONS.forEach((q) => {
-      if (answers[q._id] === q.correctAnswer) {
-        currentScore += 1;
-      }
+      if (answers[q._id] === q.correctAnswer) currentScore += 1;
     });
     setScore(currentScore);
     setIsSubmitted(true);
     setCurrentView("RESULT");
-  };
-
-  const handleSubmit = () => {
-    if (confirm("Are you sure you want to submit your exam now?")) {
-      calculateResults();
-    }
   };
 
   const handleAutoSubmit = () => {
@@ -168,25 +199,30 @@ export default function TestsPage() {
       </div>
     );
 
-  // VIEW: Class Selection
+  // TIER 1: Class Selection
   if (currentView === "CLASSES") {
     return (
       <div className="min-h-screen bg-[#FEFAF7] text-[#154D57] p-6 lg:p-8 pt-0 pb-44 md:pb-32 font-sans relative flex flex-col items-center">
-        {/* Top Spacer for Fixed Nav */}
         <div className="h-32 w-full shrink-0"></div>
         <div className="max-w-4xl w-full">
           <div className="mb-12 text-center">
-            <h1 className="text-4xl md:text-5xl font-black mb-4">Select Class</h1>
+            <h1 className="text-4xl md:text-5xl font-black mb-4">
+              Select Class
+            </h1>
             <p className="text-lg opacity-60 font-medium">
-              Choose your academic level to see available tests.
+              Choose your academic level to continue.
             </p>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {CLASSES.map((cls) => (
               <button
                 key={cls.id}
-                onClick={() => cls.active && setCurrentView("SUBJECTS")}
+                onClick={() => {
+                  if (cls.active) {
+                    setSelectedClass(cls);
+                    setCurrentView("VERSIONS");
+                  }
+                }}
                 className={`relative group p-8 rounded-4xl border-2 transition-all duration-300 text-left h-48 flex flex-col justify-between
                   ${
                     cls.active
@@ -195,7 +231,9 @@ export default function TestsPage() {
                   }`}
               >
                 <div>
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 transition-colors ${cls.active ? 'bg-[#154D57]/10 text-[#154D57]' : 'bg-gray-200 text-gray-400'}`}>
+                  <div
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${cls.active ? "bg-[#154D57]/10 text-[#154D57]" : "bg-gray-200 text-gray-400"}`}
+                  >
                     <FiBook className="w-6 h-6" />
                   </div>
                   <h3 className="text-2xl font-black">{cls.name}</h3>
@@ -206,8 +244,8 @@ export default function TestsPage() {
                   </span>
                 )}
                 {cls.active && (
-                  <div className="flex items-center gap-2 text-[#154D57] font-black text-sm uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                    Explore Tests →
+                  <div className="font-black text-sm uppercase tracking-widest text-[#154D57]/60">
+                    Select Version →
                   </div>
                 )}
               </button>
@@ -218,98 +256,192 @@ export default function TestsPage() {
     );
   }
 
-  // VIEW: Subject Selection (SSC)
-  if (currentView === "SUBJECTS") {
+  // TIER 2: Version Selection
+  if (currentView === "VERSIONS") {
     return (
       <div className="min-h-screen bg-[#FEFAF7] text-[#154D57] p-6 lg:p-8 pt-0 pb-44 md:pb-32 font-sans relative flex flex-col items-center">
-        {/* Top Spacer for Fixed Nav */}
         <div className="h-32 w-full shrink-0"></div>
-        <div className="max-w-5xl w-full">
+        <div className="max-w-3xl w-full">
           <button
             onClick={() => setCurrentView("CLASSES")}
             className="flex items-center gap-2 mb-8 text-[#154D57] font-black uppercase tracking-widest text-sm hover:translate-x-[-4px] transition-transform"
           >
             <FiChevronLeft className="w-5 h-5" /> Back to Classes
           </button>
+          <div className="mb-12 text-center md:text-left">
+            <h1 className="text-4xl md:text-5xl font-black mb-2">
+              Select Version
+            </h1>
+            <p className="text-lg opacity-60 font-bold">
+              Class: {selectedClass?.name}
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-6">
+            {VERSIONS.map((v) => (
+              <button
+                key={v.id}
+                onClick={() => {
+                  if (v.active) {
+                    setSelectedVersion(v);
+                    setCurrentView("SUBJECTS");
+                    setSelectedGroup("science"); // Default to science when entering subjects view
+                  }
+                }}
+                className={`flex-1 p-10 rounded-4xl border-2 transition-all duration-300 text-center flex flex-col items-center gap-4
+                  ${
+                    v.active
+                      ? "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-xl hover:-translate-y-1"
+                      : "bg-gray-50 border-gray-100 cursor-not-allowed opacity-60 grayscale"
+                  }`}
+              >
+                <div
+                  className={`w-16 h-16 rounded-full flex items-center justify-center ${v.active ? "bg-[#154D57]/10 text-[#154D57]" : "bg-gray-200 text-gray-400"}`}
+                >
+                  <FiGlobe className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-black">{v.name}</h3>
+                {!v.active && (
+                  <span className="text-xs font-black uppercase tracking-widest bg-gray-200 px-3 py-1 rounded-full text-gray-500">
+                    Coming Soon
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
+  // TIER 3: Subject Selection
+  if (currentView === "SUBJECTS") {
+    const versionData =
+      SUBJECT_DATA[selectedVersion?.id] || SUBJECT_DATA.bangla;
+
+    return (
+      <div className="min-h-screen bg-[#FEFAF7] text-[#154D57] p-6 lg:p-8 pt-0 pb-44 md:pb-32 font-sans relative flex flex-col items-center">
+        <div className="h-32 w-full shrink-0"></div>
+        <div className="max-w-5xl w-full">
+          <button
+            onClick={() => setCurrentView("VERSIONS")}
+            className="flex items-center gap-2 mb-8 text-[#154D57] font-black uppercase tracking-widest text-sm hover:translate-x-[-4px] transition-transform"
+          >
+            <FiChevronLeft className="w-5 h-5" /> Back to Versions
+          </button>
           <div className="mb-12">
-            <h1 className="text-4xl font-black mb-2">SSC Subjects</h1>
-            <p className="text-[#154D57]/60 font-bold">Select a subject to start your MCQ practice.</p>
+            <div className="flex items-center gap-3 text-sm font-black uppercase tracking-widest opacity-60 mb-2">
+              <span>{selectedClass?.name}</span>
+              <span>/</span>
+              <span>{selectedVersion?.name}</span>
+            </div>
+            <h1 className="text-4xl font-black">All Subjects</h1>
           </div>
 
-          {/* Common Subjects Section */}
+          {/* Common Section */}
           <div className="mb-16">
             <div className="flex items-center gap-3 mb-8">
               <div className="w-10 h-10 rounded-xl bg-[#154D57]/10 flex items-center justify-center text-[#154D57]">
                 <FiZap className="w-5 h-5" />
               </div>
-              <h2 className="text-2xl font-black">Common Subjects</h2>
+              <h2 className="text-2xl font-black">Compulsory Subjects</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {SSC_COMMON_SUBJECTS.map((sub) => (
+              {versionData.common.map((sub) => (
                 <button
                   key={sub.id}
-                  onClick={() => sub.active && setCurrentView("EXAM")}
+                  onClick={() => {
+                    if (sub.active) {
+                      setSelectedSubject(sub);
+                      setCurrentView("EXAM");
+                    }
+                  }}
                   className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group
-                    ${sub.active 
-                      ? "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-lg hover:shadow-xl hover:-translate-y-1" 
-                      : "bg-gray-50 border-gray-100 cursor-not-allowed opacity-60"
-                    }`}
+                    ${sub.active ? "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-lg" : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
                 >
-                  <span className={`text-lg font-bold ${sub.active ? 'text-[#154D57]' : 'text-gray-400'}`}>
+                  <span
+                    className={`text-lg font-bold ${sub.active ? "text-[#154D57]" : "text-gray-400"}`}
+                  >
                     {sub.name}
                   </span>
-                  {!sub.active ? (
-                    <FiLock className="text-gray-300 w-5 h-5" />
+                  {sub.active ? (
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      →
+                    </span>
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-[#154D57]/5 flex items-center justify-center text-[#154D57] opacity-0 group-hover:opacity-100 transition-opacity">
-                       →
-                    </div>
+                    <FiLock className="text-gray-300" />
                   )}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Group Sections */}
-          <div>
-            <div className="flex items-center gap-3 mb-8">
+          {/* Group Section with Carousel */}
+          <div className="pb-20">
+            <div className="flex items-center gap-3 mb-10">
               <div className="w-10 h-10 rounded-xl bg-[#154D57]/10 flex items-center justify-center text-[#154D57]">
                 <FiLayers className="w-5 h-5" />
               </div>
-              <h2 className="text-2xl font-black">Choose Your Group</h2>
-            </div>
-            
-            {/* Group Tabs */}
-            <div className="flex flex-wrap gap-4 mb-10">
-              {GROUPS.map((group) => (
-                <button
-                  key={group.id}
-                  onClick={() => setSelectedGroup(selectedGroup === group.id ? null : group.id)}
-                  className={`px-8 py-3 rounded-full font-black uppercase tracking-widest text-sm transition-all border-2
-                    ${selectedGroup === group.id 
-                      ? "bg-[#154D57] border-[#154D57] text-[#FEFAF7] shadow-lg" 
-                      : "bg-white border-[#154D57]/30 text-[#154D57] hover:border-[#154D57]"
-                    }`}
-                >
-                  {group.name}
-                </button>
-              ))}
+              <h2 className="text-2xl font-black">Group Subjects</h2>
             </div>
 
-            {/* Group Subjects List */}
-            {selectedGroup && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-in fade-in slide-in-from-top-4 duration-300">
-                {GROUP_SUBJECTS[selectedGroup].map((sub) => (
+            {/* Carousel Control */}
+            <div className="bg-white rounded-4xl p-6 shadow-xl border border-[#154D57]/10 mb-10 flex items-center justify-between">
+              <button
+                onClick={() => {
+                  const idx = versionData.groups.findIndex(
+                    (g) => g.id === selectedGroup,
+                  );
+                  const prevIdx =
+                    (idx - 1 + versionData.groups.length) %
+                    versionData.groups.length;
+                  setSelectedGroup(versionData.groups[prevIdx].id);
+                }}
+                className="w-12 h-12 rounded-full border-2 border-[#154D57]/20 flex items-center justify-center text-[#154D57] hover:bg-[#154D57] hover:text-white transition-all shadow-md active:scale-90"
+              >
+                <FiChevronLeft className="w-6 h-6" />
+              </button>
+
+              <div className="text-center">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#154D57]/40 mb-1">
+                  Select Group
+                </p>
+                <h3 className="text-2xl font-black text-[#154D57]">
+                  {versionData.groups.find((g) => g.id === selectedGroup)?.name}
+                </h3>
+              </div>
+
+              <button
+                onClick={() => {
+                  const idx = versionData.groups.findIndex(
+                    (g) => g.id === selectedGroup,
+                  );
+                  const nextIdx = (idx + 1) % versionData.groups.length;
+                  setSelectedGroup(versionData.groups[nextIdx].id);
+                }}
+                className="w-12 h-12 rounded-full border-2 border-[#154D57]/20 flex items-center justify-center text-[#154D57] hover:bg-[#154D57] hover:text-white transition-all shadow-md active:scale-90"
+              >
+                <FiChevronLeft className="w-6 h-6 rotate-180" />
+              </button>
+            </div>
+
+            {/* Grid for Active Group */}
+            {selectedGroup && versionData.groupSubjects[selectedGroup] ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-in fade-in zoom-in-95 duration-500">
+                {versionData.groupSubjects[selectedGroup].map((sub) => (
                   <button
                     key={sub.id}
-                    disabled
-                    className="p-6 rounded-3xl border-2 border-gray-100 bg-gray-50 opacity-60 transition-all text-left flex items-center justify-between cursor-not-allowed"
+                    className="p-6 rounded-3xl border-2 border-gray-100 bg-white/50 opacity-60 flex items-center justify-between cursor-not-allowed group hover:border-[#154D57]/10 transition-colors"
                   >
-                    <span className="text-lg font-bold text-gray-400">{sub.name}</span>
-                    <FiLock className="text-gray-300 w-5 h-5" />
+                    <span className="text-lg font-bold text-gray-400 group-hover:text-gray-500">
+                      {sub.name}
+                    </span>
+                    <FiLock className="text-gray-300" />
                   </button>
                 ))}
+              </div>
+            ) : (
+              <div className="text-gray-400 font-bold p-14 border-2 border-dashed border-[#154D57]/10 rounded-4xl text-center bg-gray-50/50">
+                Subject list for this stream is currently being updated.
               </div>
             )}
           </div>
@@ -318,116 +450,111 @@ export default function TestsPage() {
     );
   }
 
-  // VIEW: Exam Active
+  // TIER 4: Exam View
   if (currentView === "EXAM") {
     return (
-      <div className="min-h-screen bg-[#FEFAF7] py-10 pt-0 pb-44 md:pb-28 px-4 font-sans text-[#154D57] relative">
+      <div className="min-h-screen bg-[#FEFAF7] py-10 pt-0 pb-44 md:pb-28 px-4 font-sans text-[#154D57] relative flex flex-col items-center">
         <div className="h-32 w-full shrink-0"></div>
-        <div className="max-w-3xl mx-auto relative z-10">
-          
+        <div className="max-w-3xl w-full relative z-10">
           <button
             onClick={() => setCurrentView("SUBJECTS")}
             className="flex items-center gap-2 mb-8 text-[#154D57] font-black uppercase tracking-widest text-sm"
           >
-            <FiChevronLeft className="w-5 h-5" /> Quit Exam
+            <FiChevronLeft className="w-5 h-5" /> Exit Exam
           </button>
-
           <div className="sticky top-28 md:top-36 bg-[#FEFAF7] p-6 rounded-4xl shadow-xl border border-[#154D57]/20 flex justify-between items-center mb-10 z-10">
             <div>
-              <h1 className="text-2xl font-black text-[#154D57]">Bangla 2nd Paper</h1>
-              <p className="text-sm text-[#154D57]/70 font-bold mt-1 tracking-wide uppercase">Student: {user.displayName}</p>
+              <h1 className="text-2xl font-black">
+                {selectedSubject?.name || "Exam"}
+              </h1>
+              <p className="text-sm font-bold opacity-60 uppercase">
+                Student: {user.displayName}
+              </p>
             </div>
-            <div className={`px-6 py-3 rounded-xl flex items-center gap-3 transition-colors border ${timeLeft < 60 ? 'bg-[#1C2321]/10 border-[#1C2321]/30' : 'bg-[#154D57]/5 border-[#154D57]/20'}`}>
-               <span className={`text-2xl font-black tracking-widest ${timeLeft < 60 ? 'text-[#1C2321]' : 'text-[#154D57]'}`}>
-                 {formatTime(timeLeft)}
-               </span>
+            <div className="px-6 py-3 rounded-xl border-2 border-[#154D57]/20 bg-[#154D57]/5 font-black text-2xl tracking-widest">
+              {formatTime(timeLeft)}
             </div>
           </div>
-
           <div className="space-y-8">
             {DUMMY_QUESTIONS.map((q, idx) => {
               const hasAnswered = !!answers[q._id];
               return (
-                <div key={q._id} className={`bg-[#FEFAF7] p-8 rounded-4xl transition duration-300 ${hasAnswered ? 'border border-[#154D57]/20 shadow-sm' : 'border border-[#154D57]/30 shadow-xl hover:border-[#154D57]'}`}>
-                  <h3 className="text-xl font-bold text-[#154D57] mb-6 flex gap-3">
-                    <span className="text-[#1C2321] font-black">{idx + 1}.</span> {q.questionText}
+                <div
+                  key={q._id}
+                  className={`bg-[#FEFAF7] p-8 rounded-4xl transition duration-300 border ${hasAnswered ? "border-[#154D57]/20" : "border-[#154D57]/40 shadow-xl"}`}
+                >
+                  <h3 className="text-xl font-bold mb-6 flex gap-3">
+                    <span className="opacity-40">{idx + 1}.</span>{" "}
+                    {q.questionText}
                   </h3>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    {q.options.map((opt, oIdx) => {
+                    {q.options.map((opt) => {
                       const isSelected = answers[q._id] === opt;
                       return (
                         <button
-                          key={oIdx}
+                          key={opt}
                           disabled={hasAnswered}
-                          onClick={() => handleSelectOption(q._id, opt)}
-                          className={`text-left p-5 rounded-2xl border-2 transition-all duration-200 shadow-sm ${
-                            isSelected 
-                              ? 'bg-[#154D57] border-[#154D57] text-[#FEFAF7] transform scale-[1.02] shadow-md font-bold' 
-                              : hasAnswered
-                                ? 'bg-[#FEFAF7] border-[#154D57]/20 text-[#154D57]/40 cursor-not-allowed opacity-60'
-                                : 'bg-[#FEFAF7] border-[#154D57]/40 text-[#154D57] hover:border-[#1C2321] font-bold hover:shadow-md'
-                          }`}
+                          onClick={() =>
+                            !hasAnswered &&
+                            setAnswers({ ...answers, [q._id]: opt })
+                          }
+                          className={`text-left p-5 rounded-2xl border-2 transition-all ${isSelected ? "bg-[#154D57] border-[#154D57] text-[#FEFAF7] font-bold" : "border-[#154D57]/20"}`}
                         >
-                          <div className="flex items-center gap-4">
-                            <div className={`w-5 h-5 rounded-full flex items-center justify-center border-2 ${isSelected ? 'border-[#FEFAF7]' : 'border-[#154D57]/40'}`}>
-                              {isSelected && <div className="w-2.5 h-2.5 bg-[#FEFAF7] rounded-full"></div>}
-                            </div>
-                            <span className="text-[1.05rem]">{opt}</span>
-                          </div>
+                          {opt}
                         </button>
-                      )
+                      );
                     })}
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
-
-          <div className="mt-14 text-center pb-20">
-            <button 
-              onClick={handleSubmit}
-              className="bg-[#154D57] hover:bg-[#1C2321] text-[#FEFAF7] px-12 py-5 rounded-full font-black text-xl shadow-xl transition-all transform hover:-translate-y-1 block mx-auto uppercase tracking-widest"
-            >
-              Submit Exam
-            </button>
-          </div>
+          <button
+            onClick={() => confirm("Finish exam?") && calculateResults()}
+            className="mt-14 w-full bg-[#154D57] text-[#FEFAF7] py-6 rounded-full font-black text-xl shadow-2xl hover:bg-[#1C2321] transition-all"
+          >
+            SUBMIT EXAM
+          </button>
         </div>
       </div>
     );
   }
 
-  // VIEW: Results
+  // RESULT VIEW
   return (
     <div className="min-h-screen bg-[#FEFAF7] py-10 px-4 pt-0 pb-44 md:pb-28 flex flex-col items-center justify-start relative font-sans">
-      <div className="h-32 md:h-48 w-full shrink-0"></div>
-      <div className="bg-[#FEFAF7] p-10 rounded-4xl shadow-[0_15px_40px_rgba(21,77,87,0.1)] w-full max-w-3xl border border-[#154D57]/20 relative z-10 text-center">
-        <div className="mb-10 flex flex-col items-center">
-          <div className="w-20 h-20 bg-[#154D57]/10 rounded-full flex items-center justify-center text-[#154D57] mb-6">
-            <FiCheckCircle className="w-10 h-10" />
-          </div>
-          <h1 className="text-5xl font-black text-[#154D57] mb-3">Exam Result</h1>
-          <p className="text-xl text-[#154D57]/70 font-semibold uppercase tracking-widest">
-            Score: <span className="text-[#154D57] font-black text-4xl">{score}</span> / {DUMMY_QUESTIONS.length}
-          </p>
+      <div className="h-32 w-full shrink-0"></div>
+      <div className="bg-[#FEFAF7] p-10 rounded-4xl shadow-2xl w-full max-w-3xl border border-[#154D57]/20 relative z-10 text-center">
+        <FiCheckCircle className="w-20 h-20 text-[#154D57] mx-auto mb-6" />
+        <h1 className="text-5xl font-black mb-3">Result</h1>
+        <p className="text-2xl font-bold opacity-60 mb-10">
+          Your Score:{" "}
+          <span className="text-[#154D57] text-4xl font-black">{score}</span> /{" "}
+          {DUMMY_QUESTIONS.length}
+        </p>
+        <div className="space-y-6 text-left mb-12">
+          {DUMMY_QUESTIONS.map((q) => (
+            <div
+              key={q._id}
+              className="p-6 rounded-2xl border-2 border-[#154D57]/10"
+            >
+              <h3 className="font-bold mb-2">{q.questionText}</h3>
+              <p className="text-sm font-bold">
+                Answer:{" "}
+                <span
+                  className={
+                    answers[q._id] === q.correctAnswer
+                      ? "text-green-600"
+                      : "text-red-500"
+                  }
+                >
+                  {answers[q._id] || "None"}
+                </span>
+              </p>
+            </div>
+          ))}
         </div>
-
-        <div className="space-y-6 text-left">
-          {DUMMY_QUESTIONS.map((q, idx) => {
-            const selected = answers[q._id];
-            const isCorrect = selected === q.correctAnswer;
-            return (
-              <div key={q._id} className={`p-6 rounded-2xl border-2 ${isCorrect ? 'bg-[#154D57]/10 border-[#154D57]/30' : 'bg-[#1C2321]/5 border-[#154D57]/20'}`}>
-                <h3 className="font-bold text-lg text-[#154D57] mb-4">{idx + 1}. {q.questionText}</h3>
-                <div className="text-sm font-bold flex flex-col gap-2">
-                  <p className="text-[#154D57]/60">Your Answer: <span className={isCorrect ? 'text-[#154D57]' : 'text-[#1C2321]'}>{selected || "None"}</span></p>
-                  {!isCorrect && <p className="text-[#154D57]">Correct: <span className="bg-[#154D57]/10 px-2 py-0.5 rounded">{q.correctAnswer}</span></p>}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-
-        <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={() => {
               setAnswers({});
@@ -435,11 +562,14 @@ export default function TestsPage() {
               setTimeLeft(300);
               setCurrentView("SUBJECTS");
             }}
-            className="bg-[#154D57] hover:bg-[#1C2321] text-[#FEFAF7] px-10 py-4 rounded-full font-black text-lg transition-all"
+            className="bg-[#154D57] text-white px-10 py-4 rounded-full font-black"
           >
-            Back to Subjects
+            Try Again
           </button>
-          <Link href="/dashboard" className="border-2 border-[#154D57]/20 hover:border-[#154D57] text-[#154D57] px-10 py-4 rounded-full font-black text-lg transition-all">
+          <Link
+            href="/dashboard"
+            className="border-2 border-[#154D57] px-10 py-4 rounded-full font-black text-[#154D57]"
+          >
             Dashboard
           </Link>
         </div>
@@ -447,4 +577,3 @@ export default function TestsPage() {
     </div>
   );
 }
-
