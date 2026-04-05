@@ -60,14 +60,31 @@ export default function TestsPage() {
   }, [timeLeft, isSubmitted, currentView]);
 
   // Handlers
-  const calculateResults = () => {
+  const calculateResults = async () => {
     let currentScore = 0;
     DUMMY_QUESTIONS.forEach((q) => {
       if (answers[q._id] === q.correctAnswer) currentScore += 1;
     });
+
     setScore(currentScore);
     setIsSubmitted(true);
     setCurrentView("RESULT");
+
+    // Save to Backend
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userUid: user.uid,
+          subject: selectedSubject?.name || "Unknown Subject",
+          score: currentScore,
+          totalPoints: DUMMY_QUESTIONS.length,
+        }),
+      });
+    } catch (err) {
+      console.error("Error saving result to backend:", err);
+    }
   };
 
   const handleAutoSubmit = () => {
