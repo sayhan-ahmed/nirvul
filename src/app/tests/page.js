@@ -429,7 +429,7 @@ export default function TestsPage() {
           <div className="mb-4 text-[#154D57]/40 font-black uppercase tracking-widest text-[10px] flex items-center gap-2">
             <FiLock className="w-3 h-3" /> Strict Exam Mode Active
           </div>
-          <div className="sticky top-28 md:top-36 bg-[#FEFAF7] p-6 rounded-4xl shadow-xl border border-[#154D57]/20 flex justify-between items-center mb-10 z-10">
+          <div className="sticky top-6 md:top-10 bg-[#FEFAF7] p-6 rounded-4xl shadow-xl border border-[#154D57]/20 flex justify-between items-center mb-10 z-10">
             <div>
               <h1 className="text-2xl font-black">
                 {selectedSubject?.name || "Exam"}

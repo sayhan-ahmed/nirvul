@@ -44,9 +44,12 @@ export default function Navigation() {
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const idx = NAV_ITEMS.findIndex((item) =>
+    let idx = NAV_ITEMS.findIndex((item) =>
       item.path === "/" ? pathname === "/" : pathname.startsWith(item.path),
     );
+    if (pathname.startsWith("/dashboard")) {
+      idx = NAV_ITEMS.length; // Dashboard is the last item in the mobile list
+    }
     setActiveIndex(idx !== -1 ? idx : -1);
   }, [pathname]);
 
@@ -119,22 +122,22 @@ export default function Navigation() {
       </div>
       {/* ======= DESKTOP NAVIGATION ======= */}
       <div className="hidden md:flex fixed top-8 left-0 w-full px-8 justify-center z-100">
-        <div className="w-full max-w-6xl bg-[#FEFAF7] p-2 rounded-full flex items-center justify-between shadow-[0_15px_30px_rgba(21,77,87,0.06)] border border-[#154D57]/20 relative">
+        <div className="w-full max-w-6xl bg-[#FEFAF7]/80 backdrop-blur-md p-2 rounded-full flex items-center justify-between shadow-[0_20px_50px_rgba(21,77,87,0.1)] border border-[#154D57]/10 relative">
           {/* Left Side: Logo & Links */}
           <div className="flex items-center gap-6 pl-2">
             <div
-              className="w-12 h-12 bg-[#FEFAF7] rounded-full flex items-center justify-center shadow-md cursor-pointer hover:shadow-lg transition-all overflow-hidden border-2 border-[#154D57]"
+              className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm cursor-pointer hover:shadow-md transition-all overflow-hidden border border-[#154D57]/20"
               onClick={() => router.push("/")}
             >
               <img
                 src="/logo.svg"
                 alt="Logo"
-                className="w-[80%] h-[80%] object-contain"
+                className="w-[70%] h-[70%] object-contain"
               />
             </div>
-
+ 
             {/* Nav Links */}
-            <div className="flex items-center gap-2 ml-2 pl-4 border-l border-[#154D57]/20">
+            <div className="flex items-center gap-2 ml-2 pl-4 border-l border-[#154D57]/10">
               {NAV_ITEMS.map((item, index) => {
                 const isActive = index === activeIndex;
                 return (
@@ -143,8 +146,8 @@ export default function Navigation() {
                     onClick={() => router.push(item.path)}
                     className={`font-bold text-base transition-all duration-300 px-6 py-2.5 rounded-full ${
                       isActive
-                        ? "bg-[#154D57]/10 text-[#154D57]"
-                        : "text-[#154D57]/80 hover:text-[#154D57] hover:bg-[#1C2321]/5"
+                        ? "bg-[#154D57] text-white shadow-lg shadow-[#154D57]/20"
+                        : "text-[#154D57]/70 hover:text-[#154D57] hover:bg-[#154D57]/5"
                     }`}
                   >
                     {item.label}
@@ -207,7 +210,7 @@ export default function Navigation() {
       {/* ======= MOBILE NAVIGATION ======= */}
       <div className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-center">
         <div className="bg-transparent relative pb-5 px-6 pt-3 w-full max-w-[24rem]">
-          <div className="relative bg-[#1C2321] h-14 w-full rounded-4xl flex items-center justify-around shadow-2xl overflow-visible border border-[#154D57]/10">
+          <div className="relative bg-[#1C2321] h-14 w-full rounded-4xl flex items-center justify-around shadow-2xl overflow-visible border border-[#154D57]/20">
             {[
               ...NAV_ITEMS,
               {
@@ -216,23 +219,20 @@ export default function Navigation() {
                 icon: <FiLayout className="w-5 h-5" />,
               },
             ].map((item, index) => {
-              const isActive =
-                item.path === "/"
-                  ? pathname === "/"
-                  : pathname.startsWith(item.path);
+              const isActive = index === activeIndex;
 
               return (
                 <button
                   key={item.path + "-mobile"}
                   onClick={() => router.push(item.path)}
-                  className="relative z-20 flex-1 flex flex-col items-center justify-center p-2 h-full outline-none group"
+                  className="relative flex-1 flex flex-col items-center justify-center p-2 h-full outline-none group"
                 >
                   <div
                     className={`absolute transition-all duration-300 ease-out flex items-center justify-center rounded-full
                       ${
                         isActive
-                          ? "-translate-y-5 bg-[#FEFAF7] text-[#154D57] w-14 h-14 border-[5px] border-[#FEFAF7] shadow-xl"
-                          : "translate-y-0 bg-transparent text-[#FEFAF7]/50 w-12 h-12 border-0 group-hover:text-[#FEFAF7]"
+                          ? "-translate-y-3 bg-[#FEFAF7] text-[#154D57] w-14 h-14 border-[5px] border-[#1C2321] shadow-2xl scale-110"
+                          : "translate-y-0 bg-transparent text-[#FEFAF7]/40 w-12 h-12 border-0 group-hover:text-[#FEFAF7]"
                       }
                     `}
                   >
