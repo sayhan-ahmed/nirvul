@@ -73,7 +73,7 @@ export default function Navigation() {
 
   return (
     <>
-      {/* ======= MOBILE TOP HEADER (Premium) ======= */}
+      {/* ======= MOBILE TOP HEADER ======= */}
       <div className="md:hidden fixed top-0 left-0 w-full z-100 bg-white px-6 py-4 flex items-center border-b border-gray-100 shadow-sm">
         {/* Profile Pic (Left) */}
         <Link href="/dashboard" className="w-12 h-12 rounded-full overflow-hidden shadow-sm bg-gray-50 border border-gray-100 shrink-0">
