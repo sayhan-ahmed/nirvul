@@ -11,7 +11,7 @@ import {
   FiChevronDown,
   FiLayout,
   FiLogOut,
-  FiSearch
+  FiBell,
 } from "react-icons/fi";
 import Link from "next/link";
 
@@ -66,9 +66,9 @@ export default function Navigation() {
 
   if (!user) return null;
 
-  const today = new Date().toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short'
+  const today = new Date().toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
   });
 
   return (
@@ -76,9 +76,16 @@ export default function Navigation() {
       {/* ======= MOBILE TOP HEADER ======= */}
       <div className="md:hidden fixed top-0 left-0 w-full z-100 bg-white px-6 py-4 flex items-center border-b border-gray-100 shadow-sm">
         {/* Profile Pic (Left) */}
-        <Link href="/dashboard" className="w-12 h-12 rounded-full overflow-hidden shadow-sm bg-gray-50 border border-gray-100 shrink-0">
+        <Link
+          href="/dashboard"
+          className="w-12 h-12 rounded-full overflow-hidden shadow-sm bg-gray-50 border border-gray-100 shrink-0"
+        >
           {user.photoURL ? (
-            <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" />
+            <img
+              src={user.photoURL}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
           ) : (
             <div className="w-full h-full bg-[#154D57] flex items-center justify-center text-[#FEFAF7]">
               <FiUser className="w-7 h-7" />
@@ -89,16 +96,17 @@ export default function Navigation() {
         {/* Text Area (Centered) */}
         <div className="flex-1 flex flex-col items-center justify-center text-center">
           <h2 className="text-[#1A1A1A] text-xl font-extrabold tracking-tight leading-none mb-1.5">
-            Hello, {user.displayName?.split(' ')[0] || "User"}
+            Hello, {user.displayName?.split(" ")[0] || "User"}
           </h2>
           <p className="text-gray-400 text-md font-medium tracking-tight">
             Today {today}.
           </p>
         </div>
-        
-        {/* Search Icon (Right) */}
-        <button className="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center text-gray-800 transition-colors hover:bg-gray-50 shrink-0">
-          <FiSearch className="w-6 h-6 stroke-[1.5]" />
+
+        {/* Notifications (Right) */}
+        <button className="relative w-12 h-12 rounded-full border border-gray-100 flex items-center justify-center text-[#154D57] bg-white shadow-sm transition-all hover:bg-gray-50 active:scale-90 shrink-0">
+          <FiBell className="w-6 h-6 stroke-[1.5]" />
+          <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white shadow-sm"></span>
         </button>
       </div>
       {/* ======= DESKTOP NAVIGATION ======= */}

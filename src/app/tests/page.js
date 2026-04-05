@@ -213,7 +213,7 @@ export default function TestsPage() {
               Choose your academic level to continue.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {CLASSES.map((cls) => (
               <button
                 key={cls.id}
@@ -250,6 +250,17 @@ export default function TestsPage() {
                 )}
               </button>
             ))}
+          </div>
+
+          <div className="text-center max-w-lg mx-auto">
+            <p className="text-[#154D57]/40 font-bold text-sm leading-relaxed">
+              Stay tuned! We are constantly adding new classes and specialized
+              admission tests to our library.
+              <br />
+              <span className="text-xs mt-1 block">
+                নতুন নতুন ক্লাস ও ভর্তি পরীক্ষার মডেল টেস্ট শীঘ্রই যুক্ত করা হবে।
+              </span>
+            </p>
           </div>
         </div>
       </div>
