@@ -40,6 +40,7 @@ export default function Navigation() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isExamActive, setIsExamActive] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -59,13 +60,19 @@ export default function Navigation() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const handleToggle = (e) => setIsExamActive(e.detail.active);
+    window.addEventListener("toggleNav", handleToggle);
+    return () => window.removeEventListener("toggleNav", handleToggle);
+  }, []);
+
   const handleLogout = async () => {
     await logout();
     router.push("/");
   };
 
   const hideOnRoutes = ["/dashboard"];
-  if (!user || hideOnRoutes.includes(pathname)) return null;
+  if (!user || hideOnRoutes.includes(pathname) || isExamActive) return null;
 
   const today = new Date().toLocaleDateString("en-GB", {
     day: "numeric",

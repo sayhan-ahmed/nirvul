@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
+import { useModal } from "@/context/ModalContext";
 import {
   FiBook,
   FiCheckCircle,
@@ -23,6 +25,8 @@ import {
 
 export default function TestsPage() {
   const { user, loading } = useAuth();
+  const { showToast } = useToast();
+  const { showConfirm } = useModal();
   const router = useRouter();
 
   // Selection State
@@ -42,6 +46,52 @@ export default function TestsPage() {
   useEffect(() => {
     if (!loading && !user) router.push("/");
   }, [user, loading, router]);
+
+  // Navigation Control for Exam Mode
+  useEffect(() => {
+    const isExamActive = currentView === "EXAM" || currentView === "RESULT";
+    window.dispatchEvent(
+      new CustomEvent("toggleNav", { detail: { active: isExamActive } }),
+    );
+
+    // Browser Lock (Back Button & Refresh)
+    if (isExamActive) {
+      const handleBeforeUnload = (e) => {
+        e.preventDefault();
+        e.returnValue = ""; // Standard browser warning
+      };
+
+      // Push fake state to capture back button
+      window.history.pushState(null, null, window.location.pathname);
+      const handlePopState = (e) => {
+        if (currentView === "EXAM" || currentView === "RESULT") {
+          window.history.pushState(null, null, window.location.pathname);
+          showToast(
+            "Examination is active. You must submit your answers before leaving.",
+            "warning",
+          );
+        }
+      };
+
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      window.addEventListener("popstate", handlePopState);
+
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+        window.removeEventListener("popstate", handlePopState);
+        window.dispatchEvent(
+          new CustomEvent("toggleNav", { detail: { active: false } }),
+        );
+      };
+    }
+
+    // Cleanup for non-exam views
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent("toggleNav", { detail: { active: false } }),
+      );
+    };
+  }, [currentView]);
 
   // Timer Effect
   useEffect(() => {
@@ -82,14 +132,16 @@ export default function TestsPage() {
           totalPoints: DUMMY_QUESTIONS.length,
         }),
       });
+      showToast("Exam submitted successfully!", "success");
     } catch (err) {
       console.error("Error saving result to backend:", err);
+      showToast("Failed to save results. Please check connection.", "error");
     }
   };
 
   const handleAutoSubmit = () => {
     calculateResults();
-    alert("Time is up! Your exam has been auto-submitted.");
+    showToast("Time is up! Your exam has been auto-submitted.", "error");
   };
 
   const formatTime = (seconds) => {
@@ -374,12 +426,9 @@ export default function TestsPage() {
       <div className="min-h-screen bg-[#FEFAF7] py-10 px-4 pt-0 pb-44 md:pb-28 font-sans text-[#154D57] relative flex flex-col items-center">
         <div className="h-32 w-full shrink-0"></div>
         <div className="max-w-3xl w-full relative z-10">
-          <button
-            onClick={() => setCurrentView("SUBJECTS")}
-            className="flex items-center gap-2 mb-8 text-[#154D57] font-black uppercase tracking-widest text-sm hover:translate-x-[-4px] transition-transform"
-          >
-            <FiChevronLeft className="w-5 h-5" /> Exit Exam
-          </button>
+          <div className="mb-4 text-[#154D57]/40 font-black uppercase tracking-widest text-[10px] flex items-center gap-2">
+            <FiLock className="w-3 h-3" /> Strict Exam Mode Active
+          </div>
           <div className="sticky top-28 md:top-36 bg-[#FEFAF7] p-6 rounded-4xl shadow-xl border border-[#154D57]/20 flex justify-between items-center mb-10 z-10">
             <div>
               <h1 className="text-2xl font-black">
@@ -428,7 +477,13 @@ export default function TestsPage() {
             })}
           </div>
           <button
-            onClick={() => confirm("Finish exam?") && calculateResults()}
+            onClick={() =>
+              showConfirm(
+                "Finish Exam?",
+                "Are you sure you want to submit your answers? You cannot change them after proceeding.",
+                calculateResults,
+              )
+            }
             className="mt-14 w-full bg-[#154D57] text-[#FEFAF7] py-6 rounded-full font-black text-xl shadow-2xl hover:bg-[#1C2321] transition-all"
           >
             SUBMIT EXAM
@@ -458,7 +513,7 @@ export default function TestsPage() {
             >
               <h3 className="font-bold mb-2">{q.questionText}</h3>
               <p className="text-sm font-bold">
-                Answer:{" "}
+                Your Answer:{" "}
                 <span
                   className={
                     answers[q._id] === q.correctAnswer
@@ -469,27 +524,27 @@ export default function TestsPage() {
                   {answers[q._id] || "None"}
                 </span>
               </p>
+              {answers[q._id] !== q.correctAnswer && (
+                <p className="text-sm font-bold text-green-600 mt-2">
+                  Correct Answer: {q.correctAnswer}
+                </p>
+              )}
             </div>
           ))}
         </div>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
           <button
             onClick={() => {
-              setAnswers({});
-              setIsSubmitted(false);
-              setTimeLeft(300);
-              setCurrentView("SUBJECTS");
+              window.dispatchEvent(
+                new CustomEvent("toggleNav", { detail: { active: false } }),
+              );
+              router.push("/dashboard");
             }}
-            className="bg-[#154D57] text-white px-10 py-4 rounded-full font-black hover:bg-[#1C2321] transition-colors"
+            className="w-full sm:w-auto bg-[#154D57] text-white px-12 py-4 rounded-full font-black hover:bg-[#1C2321] transition-all shadow-xl"
           >
-            Try Again
+            Go to Dashboard
           </button>
-          <Link
-            href="/dashboard"
-            className="border-2 border-[#154D57] px-10 py-4 rounded-full font-black text-[#154D57] hover:bg-[#154D57]/5 transition-colors"
-          >
-            Dashboard
-          </Link>
         </div>
       </div>
     </div>
