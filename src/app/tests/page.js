@@ -22,6 +22,7 @@ import {
   CLASSES,
   VERSIONS,
   SUBJECT_DATA,
+  EXAM_STRUCTURE,
 } from "@/data/testData";
 
 export default function TestsPage() {
@@ -36,6 +37,8 @@ export default function TestsPage() {
   const [selectedVersion, setSelectedVersion] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState("science"); 
   const [selectedSubject, setSelectedSubject] = useState(null);
+  const [selectedChapter, setSelectedChapter] = useState(null);
+  const [selectedTest, setSelectedTest] = useState(null);
 
   // Exam State
   const [answers, setAnswers] = useState({});
@@ -116,13 +119,15 @@ export default function TestsPage() {
     setIsSubmitted(true);
     setCurrentView("RESULT");
 
+    const examName = `${selectedSubject?.name}${selectedChapter ? ` (${selectedChapter.name})` : ' (Comprehensive)'} - ${selectedTest?.name || ''}`;
+
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userUid: user.uid,
-          subject: selectedSubject?.name || "Unknown Subject",
+          subject: examName,
           score: currentScore,
           totalPoints: shuffledQuestions.length,
         }),
@@ -139,9 +144,44 @@ export default function TestsPage() {
   };
 
   const handleSubjectSelect = (subject) => {
-    if (!subject.active) return;
-    setSelectedSubject(subject);
+    // If we want subjects to unlock just by having exam structure
+    const hasData = !!EXAM_STRUCTURE[subject.id];
+    
+    if (!subject.active && !hasData) return;
+    
+    // Even if subject.active is false, if it has EXAM_STRUCTURE data, let user enter
+    if (hasData) {
+      setSelectedSubject(subject);
+      setSelectedChapter(null);
+      setSelectedTest(null);
+      setCurrentView("CHAPTERS");
+    } else {
+      if (subject.active) {
+         showToast("Exam questions are not available for this subject yet.", "warning");
+      }
+    }
+  };
+
+  const handleChapterSelect = (chapter) => {
+    if (!chapter.active) return;
+    setSelectedChapter(chapter);
+    setCurrentView("CHAPTER_TESTS");
+  };
+
+  const handleTestSelect = (test) => {
+    if (!test.active) return;
+    setSelectedTest(test);
     setCurrentView("RULES");
+  };
+
+  const handleRulesBack = () => {
+    if (selectedChapter) {
+      setCurrentView("CHAPTER_TESTS");
+    } else if (EXAM_STRUCTURE[selectedSubject?.id]) {
+      setCurrentView("CHAPTERS");
+    } else {
+      setCurrentView("SUBJECTS");
+    }
   };
 
   const startExam = () => {
@@ -286,17 +326,21 @@ export default function TestsPage() {
               <h2 className="text-2xl font-black text-[#154D57]">Compulsory Subjects</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {versionData.common.map((subject) => (
-                <button
-                  key={subject.id}
-                  onClick={() => handleSubjectSelect(subject)}
-                  className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group
-                    ${subject.active ? "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-lg" : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
-                >
-                  <span className={`text-lg font-bold ${subject.active ? "text-[#154D57]" : "text-gray-400"}`}>{subject.name}</span>
-                  {subject.active ? <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> : <FiLock className="text-gray-300" />}
-                </button>
-              ))}
+              {versionData.common.map((subject) => {
+                const hasData = !!EXAM_STRUCTURE[subject.id];
+                const isActive = subject.active || hasData;
+                return (
+                  <button
+                    key={subject.id}
+                    onClick={() => handleSubjectSelect(subject)}
+                    className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group
+                      ${isActive ? "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-lg" : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
+                  >
+                    <span className={`text-lg font-bold ${isActive ? "text-[#154D57]" : "text-gray-400"}`}>{subject.name}</span>
+                    {isActive ? <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> : <FiLock className="text-gray-300" />}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -328,17 +372,21 @@ export default function TestsPage() {
             </div>
             {selectedGroup && versionData.groupSubjects[selectedGroup] && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-in fade-in zoom-in-95 duration-500">
-                {versionData.groupSubjects[selectedGroup].map((sub) => (
-                  <button
-                    key={sub.id}
-                    onClick={() => handleSubjectSelect(sub)}
-                    className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group
-                      ${sub.active ? "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-lg" : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
-                  >
-                    <span className={`text-lg font-bold ${sub.active ? "text-[#154D57]" : "text-gray-400"}`}>{sub.name}</span>
-                    {sub.active ? <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> : <FiLock className="text-gray-300" />}
-                  </button>
-                ))}
+                {versionData.groupSubjects[selectedGroup].map((sub) => {
+                  const hasData = !!EXAM_STRUCTURE[sub.id];
+                  const isActive = sub.active || hasData;
+                  return (
+                    <button
+                      key={sub.id}
+                      onClick={() => handleSubjectSelect(sub)}
+                      className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group
+                        ${isActive ? "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-lg" : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
+                    >
+                      <span className={`text-lg font-bold ${isActive ? "text-[#154D57]" : "text-gray-400"}`}>{sub.name}</span>
+                      {isActive ? <span className="opacity-0 group-hover:opacity-100 transition-opacity">→</span> : <FiLock className="text-gray-300" />}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -347,13 +395,171 @@ export default function TestsPage() {
     );
   }
 
-  // TIER 3.5: Rules View
+  // TIER 3.5: Chapter Selection
+  if (currentView === "CHAPTERS") {
+    const structure = EXAM_STRUCTURE[selectedSubject.id] || { comprehensive: [], chapters: [] };
+    const mixTests = structure.comprehensive;
+    const chapterTests = structure.chapters;
+
+    const renderTestButton = (test) => (
+      <button
+        key={test.id}
+        onClick={() => {
+          setSelectedChapter(null);
+          handleTestSelect(test);
+        }}
+        className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group
+          ${test.active 
+            ? "bg-[#154D57] text-white border-[#154D57] shadow-xl hover:-translate-y-1" 
+            : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
+            <FiZap className="w-5 h-5" />
+          </div>
+          <span className={`text-lg font-bold ${test.active ? "text-white" : "text-gray-400"}`}>
+            {test.name}
+          </span>
+        </div>
+        {test.active ? (
+          <span className={`opacity-0 group-hover:opacity-100 transition-opacity text-white`}>→</span>
+        ) : (
+          <FiLock className="text-gray-300" />
+        )}
+      </button>
+    );
+
+    const renderChapterButton = (chapter) => (
+      <button
+        key={chapter.id}
+        onClick={() => handleChapterSelect(chapter)}
+        className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group
+          ${chapter.active 
+            ? "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-lg text-[#154D57]" 
+            : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-full bg-[#154D57]/10 flex items-center justify-center text-[#154D57]">
+            <FiBook className="w-5 h-5" />
+          </div>
+          <span className={`text-lg font-bold ${chapter.active ? "text-[#154D57]" : "text-gray-400"}`}>
+            {chapter.name}
+          </span>
+        </div>
+        {chapter.active ? (
+          <span className={`opacity-0 group-hover:opacity-100 transition-opacity`}>→</span>
+        ) : (
+          <FiLock className="text-gray-300" />
+        )}
+      </button>
+    );
+
+    return (
+      <div className="min-h-screen bg-[#FEFAF7] text-[#154D57] p-6 lg:p-8 pt-0 pb-44 md:pb-32 font-sans relative flex flex-col items-center">
+        <div className="h-32 w-full shrink-0"></div>
+        <div className="max-w-5xl w-full">
+          <button onClick={() => setCurrentView("SUBJECTS")} className="flex items-center gap-2 mb-8 text-[#154D57] font-black uppercase tracking-widest text-sm hover:translate-x-[-4px] transition-transform">
+            <FiChevronLeft className="w-5 h-5" /> Back to Subjects
+          </button>
+          
+          <div className="mb-12">
+            <div className="flex items-center gap-3 text-sm font-black uppercase tracking-widest opacity-60 mb-2">
+              <span>{selectedClass?.name}</span><span>/</span><span>{selectedVersion?.name}</span><span>/</span><span>{selectedSubject?.name}</span>
+            </div>
+            <h1 className="text-4xl font-black text-[#154D57]">Select Topic</h1>
+            <p className="text-lg mt-2 opacity-80 font-bold">You can select a specific chapter or take a Mix Model Test.</p>
+          </div>
+
+          {/* Mix Model Test Category */}
+          {mixTests.length > 0 && (
+            <div className="mb-16">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 rounded-xl bg-[#154D57]/10 flex items-center justify-center text-[#154D57]"><FiZap className="w-5 h-5" /></div>
+                <h2 className="text-2xl font-black text-[#154D57]">Comprehensive Test</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {mixTests.map(renderTestButton)}
+              </div>
+            </div>
+          )}
+
+          {/* Chapter-wise Tests Category */}
+          {chapterTests.length > 0 && (
+            <div className="pb-10">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 rounded-xl bg-[#154D57]/10 flex items-center justify-center text-[#154D57]"><FiLayers className="w-5 h-5" /></div>
+                <h2 className="text-2xl font-black text-[#154D57]">Chapter-wise Tests</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {chapterTests.map(renderChapterButton)}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // TIER 3.8: Chapter Tests Selection
+  if (currentView === "CHAPTER_TESTS") {
+    return (
+      <div className="min-h-screen bg-[#FEFAF7] text-[#154D57] p-6 lg:p-8 pt-0 pb-44 md:pb-32 font-sans relative flex flex-col items-center">
+        <div className="h-32 w-full shrink-0"></div>
+        <div className="max-w-5xl w-full">
+          <button onClick={() => setCurrentView("CHAPTERS")} className="flex items-center gap-2 mb-8 text-[#154D57] font-black uppercase tracking-widest text-sm hover:translate-x-[-4px] transition-transform">
+            <FiChevronLeft className="w-5 h-5" /> Back to Topics
+          </button>
+          
+          <div className="mb-12">
+            <div className="flex items-center gap-3 text-sm font-black uppercase tracking-widest opacity-60 mb-2">
+              <span>{selectedSubject?.name}</span><span>/</span><span>{selectedChapter?.name}</span>
+            </div>
+            <h1 className="text-4xl font-black text-[#154D57]">Select Test</h1>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {selectedChapter?.tests?.map((test) => (
+              <button
+                key={test.id}
+                onClick={() => handleTestSelect(test)}
+                className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group
+                  ${test.active 
+                    ? "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-lg text-[#154D57]" 
+                    : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-[#154D57]/10 flex items-center justify-center text-[#154D57]">
+                    <FiBook className="w-5 h-5" />
+                  </div>
+                  <span className={`text-lg font-bold ${test.active ? "text-[#154D57]" : "text-gray-400"}`}>
+                    {test.name}
+                  </span>
+                </div>
+                {test.active ? (
+                  <span className={`opacity-0 group-hover:opacity-100 transition-opacity`}>→</span>
+                ) : (
+                  <FiLock className="text-gray-300" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // TIER 4: Rules View
   if (currentView === "RULES") {
     return (
       <div className="min-h-screen bg-[#FEFAF7] p-6 lg:p-8 pt-0 pb-44 md:pb-32 font-sans relative flex flex-col items-center">
         <div className="h-32 w-full shrink-0"></div>
-        <div className="max-w-2xl w-full bg-white p-10 rounded-4xl shadow-xl border border-[#154D57]/10">
-          <h1 className="text-3xl font-black mb-6 text-[#154D57]">Exam Rules</h1>
+        <div className="max-w-2xl w-full">
+          <button onClick={handleRulesBack} className="flex items-center gap-2 mb-8 text-[#154D57] font-black uppercase tracking-widest text-sm hover:translate-x-[-4px] transition-transform">
+            <FiChevronLeft className="w-5 h-5" /> Back
+          </button>
+          
+          <div className="bg-white p-10 rounded-4xl shadow-xl border border-[#154D57]/10">
+            <h1 className="text-3xl font-black mb-6 text-[#154D57]">Exam Rules</h1>
           <ul className="space-y-5 text-[#154D57]/80 font-medium mb-10 pl-2">
             <li className="flex items-start gap-4">
               <span className="text-red-500 font-black shrink-0 mt-1">•</span>
@@ -377,12 +583,13 @@ export default function TestsPage() {
             </li>
           </ul>
           <button onClick={startExam} className="w-full bg-[#154D57] text-white py-4 rounded-full font-black hover:bg-[#1C2321] transition-all shadow-lg active:scale-95">START EXAM</button>
+          </div>
         </div>
       </div>
     );
   }
 
-  // TIER 4: Exam View
+  // TIER 5: Exam View
   if (currentView === "EXAM") {
     return (
       <div className="min-h-screen bg-[#FEFAF7] py-10 px-4 pt-0 pb-44 md:pb-28 font-sans text-[#154D57] relative flex flex-col items-center">
@@ -391,8 +598,12 @@ export default function TestsPage() {
           <div className="mb-4 text-[#154D57]/40 font-black uppercase tracking-widest text-[10px] flex items-center gap-2"><FiLock className="w-3 h-3" /> Strict Exam Mode Active</div>
           <div className="sticky top-6 md:top-10 bg-[#FEFAF7] p-6 rounded-4xl shadow-xl border border-[#154D57]/20 flex justify-between items-center mb-10 z-10">
             <div>
-              <h1 className="text-2xl font-black text-[#154D57]">{selectedSubject?.name || "Exam"}</h1>
-              <p className="text-sm font-bold opacity-60 uppercase">Student: {user.displayName}</p>
+              <h1 className="text-xl md:text-2xl font-black text-[#154D57]">
+                {selectedSubject?.name || "Exam"}
+                {selectedChapter && selectedChapter.id !== "mix" && <span className="opacity-70 text-lg"> - {selectedChapter.name}</span>}
+                {selectedChapter && selectedChapter.id === "mix" && <span className="text-orange-500 text-lg"> (Mix)</span>}
+              </h1>
+              <p className="text-sm font-bold opacity-60 uppercase mt-1">Student: {user.displayName}</p>
             </div>
             <div className="px-6 py-3 rounded-xl border-2 border-[#154D57]/20 bg-[#154D57]/5 font-black text-2xl tracking-widest">{formatTime(timeLeft)}</div>
           </div>
@@ -433,7 +644,7 @@ export default function TestsPage() {
     );
   }
 
-  // TIER 5: Result View
+  // TIER 6: Result View
   if (currentView === "RESULT") {
     return (
       <div className="min-h-screen bg-[#FEFAF7] py-10 px-4 pt-0 pb-44 md:pb-28 font-sans text-[#154D57] relative flex flex-col items-center">
@@ -442,7 +653,7 @@ export default function TestsPage() {
           <div className="w-24 h-24 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8"><FiCheckCircle className="w-12 h-12" /></div>
           <h1 className="text-4xl font-black mb-4 text-[#154D57]">Exam Completed!</h1>
           <p className="text-xl font-medium text-[#154D57]/60 mb-10">
-            Great job! You've finished the <b>{selectedSubject?.name}</b> exam.
+            Great job! You've finished the <b>{selectedSubject?.name} {selectedChapter && selectedChapter.id !== "mix" ? `- ${selectedChapter.name}` : ""}</b> exam.
           </p>
 
           <div className="grid grid-cols-2 gap-6 mb-12">

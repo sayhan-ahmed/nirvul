@@ -371,3 +371,141 @@ export const SUBJECT_DATA = {
     },
   },
 };
+
+export const EXAM_STRUCTURE = {
+  bangla2: {
+    comprehensive: [
+      { id: "comp_1", name: "Model Test 1", active: true },
+      { id: "comp_2", name: "Model Test 2", active: true },
+    ],
+    chapters: [
+      {
+        id: "ch_5",
+        name: "পরিচ্ছেদ ৫ : ধ্বনি ও বর্ণ",
+        active: true,
+        tests: [
+          { id: "ch_5_t1", name: "Test 1", active: true },
+          { id: "ch_5_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_6",
+        name: "পরিচ্ছেদ ৬ : স্বরধ্বনি",
+        active: true,
+        tests: [
+          { id: "ch_6_t1", name: "Test 1", active: true },
+          { id: "ch_6_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_7",
+        name: "পরিচ্ছেদ ৭ : ব্যঞ্জনধ্বনি",
+        active: true,
+        tests: [
+          { id: "ch_7_t1", name: "Test 1", active: true },
+          { id: "ch_7_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_8",
+        name: "পরিচ্ছেদ ৮ : বর্ণের উচ্চারণ",
+        active: true,
+        tests: [
+          { id: "ch_8_t1", name: "Test 1", active: true },
+          { id: "ch_8_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_9",
+        name: "পরিচ্ছেদ ৯ : শব্দ ও পদের গঠন",
+        active: true,
+        tests: [
+          { id: "ch_9_t1", name: "Test 1", active: true },
+          { id: "ch_9_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_10",
+        name: "পরিচ্ছেদ ১০ : উপসর্গ দিয়ে শব্দ গঠন",
+        active: true,
+        tests: [
+          { id: "ch_10_t1", name: "Test 1", active: true },
+          { id: "ch_10_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_11",
+        name: "পরিচ্ছেদ ১১ : প্রত্যয় দিয়ে শব্দ গঠন",
+        active: true,
+        tests: [
+          { id: "ch_11_t1", name: "Test 1", active: true },
+          { id: "ch_11_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_12",
+        name: "পরিচ্ছেদ ১২ : সমাস প্রক্রিয়ায় শব্দ গঠন",
+        active: true,
+        tests: [
+          { id: "ch_12_t1", name: "Test 1", active: true },
+          { id: "ch_12_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_23",
+        name: "পরিচ্ছেদ ২৩ : অনুসর্গ",
+        active: true,
+        tests: [
+          { id: "ch_23_t1", name: "Test 1", active: true },
+          { id: "ch_23_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_24",
+        name: "পরিচ্ছেদ ২৪ : যোজক",
+        active: true,
+        tests: [
+          { id: "ch_24_t1", name: "Test 1", active: true },
+          { id: "ch_24_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_25",
+        name: "পরিচ্ছেদ ২৫ : আবেগ",
+        active: true,
+        tests: [
+          { id: "ch_25_t1", name: "Test 1", active: true },
+          { id: "ch_25_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_32",
+        name: "পরিচ্ছেদ ৩২ : বাক্যের বর্গ",
+        active: true,
+        tests: [
+          { id: "ch_32_t1", name: "Test 1", active: true },
+          { id: "ch_32_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_40",
+        name: "পরিচ্ছেদ ৪০ : বাগধারা",
+        active: true,
+        tests: [
+          { id: "ch_40_t1", name: "Test 1", active: true },
+          { id: "ch_40_t2", name: "Test 2", active: true }
+        ]
+      },
+      {
+        id: "ch_42",
+        name: "পরিচ্ছেদ ৪২ : বিপরীত শব্দ",
+        active: true,
+        tests: [
+          { id: "ch_42_t1", name: "Test 1", active: true },
+          { id: "ch_42_t2", name: "Test 2", active: true }
+        ]
+      },
+    ]
+  }
+};
+
