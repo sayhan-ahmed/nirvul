@@ -46,6 +46,8 @@ export default function TestsPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
+  const [userResults, setUserResults] = useState([]);
+  const [isFetchingResults, setIsFetchingResults] = useState(false);
 
   // Auth Check
   useEffect(() => {
@@ -108,6 +110,52 @@ export default function TestsPage() {
     return () => clearInterval(timer);
   }, [timeLeft, isSubmitted, currentView]);
 
+  // Fetch user results history
+  useEffect(() => {
+    if (user && (currentView === "CHAPTERS" || currentView === "CHAPTER_TESTS" || currentView === "SUBJECTS")) {
+      const fetchHistory = async () => {
+        setIsFetchingResults(true);
+        try {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results/user/${user.uid}`);
+          if (response.ok) {
+            const data = await response.json();
+            setUserResults(data);
+          }
+        } catch (err) {
+          console.error("Error fetching results history:", err);
+        } finally {
+          setIsFetchingResults(false);
+        }
+      };
+      fetchHistory();
+    }
+  }, [user, currentView, selectedSubject]);
+
+  // Helper to get test status
+  const getTestStatus = (testId) => {
+    // Find latest result for this testId
+    const latest = userResults.find(r => r.testId === testId);
+    if (!latest) return { lastScore: null, isLocked: false, remainingTime: null };
+
+    const lastAttemptTime = new Date(latest.date).getTime();
+    const now = Date.now();
+    const dayInMs = 24 * 60 * 60 * 1000;
+    const diff = now - lastAttemptTime;
+
+    if (diff < dayInMs) {
+      const remainingMs = dayInMs - diff;
+      const hours = Math.floor(remainingMs / (1000 * 60 * 60));
+      const mins = Math.floor((remainingMs % (1000 * 60 * 60)) / (1000 * 60));
+      return { 
+        lastScore: `${latest.score}/${latest.totalPoints}`, 
+        isLocked: true, 
+        remainingTime: `${hours}h ${mins}m` 
+      };
+    }
+
+    return { lastScore: `${latest.score}/${latest.totalPoints}`, isLocked: false, remainingTime: null };
+  };
+
   // Handlers
   const calculateResults = async () => {
     let currentScore = 0;
@@ -120,6 +168,7 @@ export default function TestsPage() {
     setCurrentView("RESULT");
 
     const examName = `${selectedSubject?.name}${selectedChapter ? ` (${selectedChapter.name})` : ' (Comprehensive)'} - ${selectedTest?.name || ''}`;
+    const testId = `${selectedSubject.id}-${selectedChapter?.id || 'comp'}-${selectedTest.id}`;
 
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/results`, {
@@ -127,7 +176,9 @@ export default function TestsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userUid: user.uid,
-          subject: examName,
+          subject: selectedSubject.name,
+          testId: testId,
+          testName: selectedTest.name,
           score: currentScore,
           totalPoints: shuffledQuestions.length,
         }),
@@ -401,33 +452,51 @@ export default function TestsPage() {
     const mixTests = structure.comprehensive;
     const chapterTests = structure.chapters;
 
-    const renderTestButton = (test) => (
-      <button
-        key={test.id}
-        onClick={() => {
-          setSelectedChapter(null);
-          handleTestSelect(test);
-        }}
-        className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group
-          ${test.active 
-            ? "bg-[#154D57] text-white border-[#154D57] shadow-xl hover:-translate-y-1" 
-            : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
-            <FiZap className="w-5 h-5" />
+    const renderTestButton = (test) => {
+      const testId = `${selectedSubject.id}-comp-${test.id}`;
+      const { lastScore, isLocked, remainingTime } = getTestStatus(testId);
+
+      return (
+        <button
+          key={test.id}
+          disabled={!test.active || isLocked}
+          onClick={() => {
+            setSelectedChapter(null);
+            handleTestSelect(test);
+          }}
+          className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group relative overflow-hidden
+            ${test.active 
+              ? isLocked 
+                ? "bg-gray-100 border-gray-200 cursor-not-allowed grayscale"
+                : "bg-[#154D57] text-white border-[#154D57] shadow-xl hover:-translate-y-1" 
+              : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
+        >
+          <div className="flex items-center gap-4 relative z-10">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isLocked ? "bg-gray-200 text-gray-400" : "bg-white/20 text-white"}`}>
+              {isLocked ? <FiLock className="w-5 h-5" /> : <FiZap className="w-5 h-5" />}
+            </div>
+            <div>
+              <span className={`text-lg font-bold block ${test.active && !isLocked ? "text-white" : "text-gray-400"}`}>
+                {test.name}
+              </span>
+              {lastScore && (
+                <span className={`text-[10px] font-black uppercase tracking-widest mt-1 block ${isLocked ? "text-gray-400" : "text-white/60"}`}>
+                  Last Score: {lastScore}
+                </span>
+              )}
+            </div>
           </div>
-          <span className={`text-lg font-bold ${test.active ? "text-white" : "text-gray-400"}`}>
-            {test.name}
-          </span>
-        </div>
-        {test.active ? (
-          <span className={`opacity-0 group-hover:opacity-100 transition-opacity text-white`}>→</span>
-        ) : (
-          <FiLock className="text-gray-300" />
-        )}
-      </button>
-    );
+          {test.active && !isLocked && (
+            <span className={`opacity-0 group-hover:opacity-100 transition-opacity text-white`}>→</span>
+          )}
+          {isLocked && (
+             <div className="text-[10px] font-black text-gray-400 absolute right-6 top-6 bg-white/50 px-2 py-1 rounded-lg">
+               {remainingTime}
+             </div>
+          )}
+        </button>
+      );
+    };
 
     const renderChapterButton = (chapter) => (
       <button
@@ -518,30 +587,48 @@ export default function TestsPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {selectedChapter?.tests?.map((test) => (
-              <button
-                key={test.id}
-                onClick={() => handleTestSelect(test)}
-                className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group
-                  ${test.active 
-                    ? "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-lg text-[#154D57]" 
-                    : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-[#154D57]/10 flex items-center justify-center text-[#154D57]">
-                    <FiBook className="w-5 h-5" />
+            {selectedChapter?.tests?.map((test) => {
+              const testId = `${selectedSubject.id}-${selectedChapter.id}-${test.id}`;
+              const { lastScore, isLocked, remainingTime } = getTestStatus(testId);
+
+              return (
+                <button
+                  key={test.id}
+                  disabled={!test.active || isLocked}
+                  onClick={() => handleTestSelect(test)}
+                  className={`p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between group relative
+                    ${test.active 
+                      ? isLocked
+                        ? "bg-gray-100 border-gray-200 cursor-not-allowed grayscale"
+                        : "bg-white border-[#154D57]/20 hover:border-[#154D57] shadow-lg text-[#154D57]" 
+                      : "bg-gray-50 border-gray-100 opacity-60 cursor-not-allowed"}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isLocked ? "bg-gray-200 text-gray-400" : "bg-[#154D57]/10 text-[#154D57]"}`}>
+                      {isLocked ? <FiLock className="w-5 h-5" /> : <FiBook className="w-5 h-5" />}
+                    </div>
+                    <div>
+                      <span className={`text-lg font-bold block ${test.active && !isLocked ? "text-[#154D57]" : "text-gray-400"}`}>
+                        {test.name}
+                      </span>
+                      {lastScore && (
+                        <span className={`text-[10px] font-black uppercase tracking-widest mt-1 block text-[#154D57]/40`}>
+                          Last Score: {lastScore}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <span className={`text-lg font-bold ${test.active ? "text-[#154D57]" : "text-gray-400"}`}>
-                    {test.name}
-                  </span>
-                </div>
-                {test.active ? (
-                  <span className={`opacity-0 group-hover:opacity-100 transition-opacity`}>→</span>
-                ) : (
-                  <FiLock className="text-gray-300" />
-                )}
-              </button>
-            ))}
+                  {test.active && !isLocked && (
+                    <span className={`opacity-0 group-hover:opacity-100 transition-opacity`}>→</span>
+                  )}
+                  {isLocked && (
+                    <div className="text-[10px] font-black text-gray-400 absolute right-6 top-6">
+                      {remainingTime}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
