@@ -72,30 +72,69 @@ export default function StudentDashboard({ user }) {
           <h3 className="text-lg md:text-xl font-black text-[#154D57]">Proficiency Graph</h3>
           <p className="text-gray-400 text-[10px] md:text-xs font-bold">Subject-wise strength</p>
         </div>
-        <div className="relative w-full aspect-square flex items-center justify-center">
+        <div className="relative w-full aspect-square flex items-center justify-center p-2">
           {subjectStats.length > 0 ? (
-            <svg viewBox="0 0 100 100" className="w-full max-w-[200px] md:max-w-[240px]">
-              <polygon points="50,5 95,35 77,90 23,90 5,35" fill="none" stroke="#154D57" strokeWidth="0.5" strokeOpacity="0.1" />
-              <polygon points="50,20 80,42 67,80 33,80 20,42" fill="none" stroke="#154D57" strokeWidth="0.5" strokeOpacity="0.1" />
-              {/* Dynamic polygon based on first 5 subjects */}
+            <svg viewBox="-15 -15 130 130" className="w-full h-full max-w-[280px] md:max-w-[320px]">
+              {/* Background Concentric Polygons (Grid) */}
+              {[1.0, 0.75, 0.5, 0.25].map((factor, idx) => (
+                <polygon
+                  key={idx}
+                  points={subjectStats.map((_, i) => {
+                    const angle = (i * 2 * Math.PI) / Math.max(subjectStats.length, 3);
+                    const radius = 50 * factor;
+                    const x = 50 + radius * Math.sin(angle);
+                    const y = 50 - radius * Math.cos(angle);
+                    return `${x},${y}`;
+                  }).join(' ')}
+                  fill="none"
+                  stroke="#154D57"
+                  strokeWidth="0.5"
+                  strokeOpacity={0.15}
+                />
+              ))}
+
+              {/* Radial Lines (Spokes) */}
+              {subjectStats.map((_, i) => {
+                const angle = (i * 2 * Math.PI) / Math.max(subjectStats.length, 3);
+                const x = 50 + 50 * Math.sin(angle);
+                const y = 50 - 50 * Math.cos(angle);
+                return (
+                  <line key={i} x1="50" y1="50" x2={x} y2={y} stroke="#154D57" strokeWidth="0.5" strokeOpacity={0.1} />
+                );
+              })}
+
+              {/* Data Polygon */}
               <polygon 
                 points={subjectStats.map((s, i) => {
                   const angle = (i * 2 * Math.PI) / Math.max(subjectStats.length, 3);
-                  const radius = (s.score / 100) * 45;
+                  const radius = Math.max((s.score / 100) * 50, 3); // Minimum radius for visibility
                   const x = 50 + radius * Math.sin(angle);
                   const y = 50 - radius * Math.cos(angle);
                   return `${x},${y}`;
                 }).join(' ')} 
-                fill="#154D57" fillOpacity="0.1" stroke="#154D57" strokeWidth="1.5" 
+                fill="#154D57" fillOpacity="0.2" stroke="#154D57" strokeWidth="2" 
               />
-              {subjectStats.slice(0, 3).map((s, i) => {
+
+              {/* Labels */}
+              {subjectStats.map((s, i) => {
                   const angle = (i * 2 * Math.PI) / Math.max(subjectStats.length, 3);
-                  const radius = 48;
+                  const radius = 62; // Distance from center for text
                   const x = 50 + radius * Math.sin(angle);
                   const y = 50 - radius * Math.cos(angle);
+                  
                   return (
-                    <text key={i} x={x} y={y} textAnchor="middle" fontSize="3.5" fontWeight="bold" fill="#154D57">
-                      {s.subject.slice(0, 10)}: {s.score}%
+                    <text 
+                      key={i} 
+                      x={x} 
+                      y={y} 
+                      textAnchor="middle" 
+                      fontSize="5" 
+                      fontWeight="900" 
+                      fill="#154D57"
+                      dominantBaseline="middle"
+                    >
+                      <tspan x={x} dy="-0.2em">{s.subject.split(' ')[0]}</tspan>
+                      <tspan x={x} dy="1.2em" fillOpacity="0.5" fontSize="4">{s.score}%</tspan>
                     </text>
                   );
               })}
@@ -109,7 +148,7 @@ export default function StudentDashboard({ user }) {
       </div>
 
       {/* --- Right Column (Subject Scores) --- */}
-      <div className="lg:col-span-1 bg-white rounded-4xl md:rounded-[2.5rem] p-6 md:p-10 border border-[#154D57]/5 shadow-sm">
+      <div className="lg:col-span-1 bg-white rounded-4xl md:rounded-[2.5rem] p-6 md:p-10 border border-[#154D57]/5 shadow-sm flex flex-col">
         <h3 className="text-lg md:text-xl font-black text-[#154D57] mb-6 md:mb-8">Subject Score</h3>
         <div className="space-y-6 md:space-y-8">
           {subjectStats.length > 0 ? subjectStats.slice(0, 5).map((item, i) => (
@@ -126,16 +165,12 @@ export default function StudentDashboard({ user }) {
             <p className="text-center py-10 text-gray-300 font-bold">Assessments needed</p>
           )}
         </div>
-        <Link href="/tests" className="mt-8 md:mt-10 block text-center py-3 md:py-4 border-2 border-[#154D57]/10 rounded-xl md:rounded-2xl text-[#154D57] font-black text-xs md:text-sm hover:bg-[#154D57] hover:text-white transition-all">
-          Take a New Test
-        </Link>
       </div>
 
       {/* --- Recent Tests taken --- */}
       <div className="lg:col-span-2 bg-white rounded-4xl md:rounded-[2.5rem] p-6 md:p-10 border border-[#154D57]/5 shadow-sm">
         <div className="flex justify-between items-center mb-8 md:mb-10">
           <h3 className="text-lg md:text-xl font-black text-[#154D57]">Recent Exam Progress</h3>
-          <Link href="/tests" className="text-[10px] md:text-xs font-black text-[#154D57] hover:underline">Start New Test →</Link>
         </div>
         <div className="space-y-3 md:space-y-4">
            {recentTests.length > 0 ? recentTests.map((test, i) => (
@@ -146,12 +181,14 @@ export default function StudentDashboard({ user }) {
                    </div>
                    <div>
                       <h4 className="text-xs md:text-sm font-black text-[#154D57]">{test.name}</h4>
-                      <p className="text-[8px] md:text-[10px] font-black uppercase text-gray-400 tracking-widest">{test.date}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-[8px] md:text-[10px] font-black uppercase text-gray-400 tracking-widest">{test.date}</p>
+                        <span className="text-[7px] md:text-[8px] font-black px-1.5 py-0.5 rounded-sm bg-gray-100 text-gray-500 border border-gray-200">{test.version}</span>
+                      </div>
                    </div>
                 </div>
                 <div className="text-right">
                    <p className="text-xs md:text-sm font-black text-[#154D57]">{test.score}</p>
-                   <span className={`text-[8px] md:text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${test.status === 'Passed' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>{test.status}</span>
                 </div>
              </div>
            )) : (

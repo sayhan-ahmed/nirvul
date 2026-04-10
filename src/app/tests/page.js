@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 import { useModal } from "@/context/ModalContext";
@@ -30,6 +30,7 @@ export default function TestsPage() {
   const { showToast } = useToast();
   const { showConfirm } = useModal();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Selection State
   const [currentView, setCurrentView] = useState("CLASSES"); // CLASSES, VERSIONS, SUBJECTS, RULES, EXAM, RESULT
@@ -53,6 +54,45 @@ export default function TestsPage() {
   useEffect(() => {
     if (!loading && !user) router.push("/");
   }, [user, loading, router]);
+
+  // Handle auto-test from dashboard
+  useEffect(() => {
+    const autoTestId = searchParams.get("autoTestId");
+    if (autoTestId && user && EXAM_STRUCTURE) {
+      // testId format: subjectId-chapterId-testId
+      const parts = autoTestId.split("-");
+      if (parts.length < 3) return;
+
+      const [subjectId, chapId, testId] = parts;
+      
+      const subject = SUBJECT_DATA.find(s => s.id === subjectId);
+      if (!subject) return;
+
+      const structure = EXAM_STRUCTURE[subjectId];
+      if (!structure) return;
+
+      setSelectedSubject(subject);
+      
+      if (chapId === "comp") {
+        const test = structure.comprehensive.find(t => t.id === parseInt(testId));
+        if (test) {
+          setSelectedChapter(null);
+          setSelectedTest(test);
+          setCurrentView("RULES");
+        }
+      } else {
+        const chapter = structure.chapters.find(c => c.id === chapId);
+        if (chapter) {
+          setSelectedChapter(chapter);
+          const test = chapter.tests?.find(t => t.id === parseInt(testId));
+          if (test) {
+            setSelectedTest(test);
+            setCurrentView("RULES");
+          }
+        }
+      }
+    }
+  }, [searchParams, user, loading]);
 
   // Navigation Control for Exam Mode
   useEffect(() => {
@@ -181,6 +221,7 @@ export default function TestsPage() {
           testName: selectedTest.name,
           score: currentScore,
           totalPoints: shuffledQuestions.length,
+          version: selectedVersion?.id === "english" ? "EV" : "BV"
         }),
       });
       showToast("Exam submitted successfully!", "success");
