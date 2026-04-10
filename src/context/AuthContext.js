@@ -40,7 +40,10 @@ export const AuthProvider = ({ children }) => {
                         photoURL: firebaseUser.photoURL,
                         role: mongoUser.role || 'student',
                         institution: mongoUser.institution || '',
-                        location: mongoUser.location || ''
+                        location: mongoUser.location || '',
+                        bio: mongoUser.bio || '',
+                        guardianName: mongoUser.guardianName || '',
+                        guardianContact: mongoUser.guardianContact || ''
                     });
                 } catch (error) {
                     console.error('Back-end sync failed', error);
