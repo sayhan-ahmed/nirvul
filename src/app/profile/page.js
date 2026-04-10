@@ -100,7 +100,7 @@ export default function ProfilePage() {
             {/* 1. Learning Streak (Restored Layout) */}
             <div className="bg-white border border-slate-100 border-b-4 rounded-4xl p-6 shadow-sm flex flex-col justify-center min-h-[160px] transition-all duration-300">
               <div className="w-full flex justify-between items-center mb-6">
-                <h3 className="text-[11px] font-extrabold text-slate-400 uppercase tracking-[0.2em] leading-none">
+                <h3 className="text-sm font-extrabold text-[#154D57] uppercase tracking-wide leading-none">
                   Weekly Activity
                 </h3>
                 <div className="flex items-center gap-1.5 px-3 py-1 bg-orange-50 rounded-full border border-orange-100/30">
@@ -114,38 +114,61 @@ export default function ProfilePage() {
 
               <div className="w-full flex justify-between items-center gap-2 px-1">
                 {data?.streak?.map((day, i) => (
-                  <div key={i} className="flex flex-col items-center gap-3 flex-1">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-sm ${day.active ? "bg-[#154D57] text-white shadow-[#154D57]/20" : "bg-slate-50 text-slate-300 border border-slate-100/50 hover:bg-white"}`}>
+                  <div
+                    key={i}
+                    className="flex flex-col items-center gap-3 flex-1"
+                  >
+                    <div
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-sm ${day.active ? "bg-[#154D57] text-white shadow-[#154D57]/20" : "bg-slate-50 text-slate-300 border border-slate-100/50 hover:bg-white"}`}
+                    >
                       <FiBook className="w-4 h-4 stroke-2" />
                     </div>
-                    <span className={`text-[10px] font-bold uppercase tracking-tighter ${day.active ? "text-[#154D57]" : "text-slate-300"}`}>
+                    <span
+                      className={`text-[10px] font-bold uppercase tracking-tighter ${day.active ? "text-[#154D57]" : "text-slate-300"}`}
+                    >
                       {day.day}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
-            {/* 2. Tests Attempted Summary (Ultra-Professional) */}
-            <div className="bg-white border border-slate-100 border-b-4 rounded-4xl p-7 shadow-sm flex flex-col justify-center min-h-[160px] hover:border-[#154D57]/20 transition-all duration-300">
-              <div className="flex items-center gap-6">
-                <div className="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center text-green-500 border border-green-100/50 shadow-sm">
-                  <FiClipboard className="w-7 h-7 stroke-2" />
+            {/* 2. Points & XP Summary */}
+            <div className="relative bg-white border border-slate-100 border-b-4 rounded-4xl p-7 flex flex-col shadow-sm transition-all duration-300 overflow-hidden">
+              {/* Coming Soon Ribbon */}
+              <div className="absolute top-5 -right-8 w-32 rotate-45 bg-linear-to-r from-amber-400 to-orange-400 py-1 flex items-center justify-center shadow-md">
+                <span className="text-[8px] font-black text-white uppercase tracking-[0.15em]">Coming Soon</span>
+              </div>
+
+              <div className="flex items-center gap-6 mb-6 opacity-60">
+                {/* Medal Icon */}
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-[1.25rem] bg-orange-50 flex items-center justify-center text-4xl shadow-inner border border-orange-100/50">
+                    🏅
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-100">
+                    <FiAward className="w-3 h-3 text-orange-500" />
+                  </div>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] mb-1">Tests Attempted</span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-black text-[#154D57] tracking-tighter">
-                      {data?.stats?.totalTests || 0}
-                    </span>
-                    <span className="text-lg font-bold text-slate-200">
-                      / {data?.stats?.totalUniqueTests || data?.stats?.totalTests || 0}
-                    </span>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-3xl font-black text-amber-600 tracking-tighter">2400 XP</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-bold text-amber-500/70 uppercase tracking-widest">Point</span>
+                    <span className="text-[9px] font-black text-slate-300 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-md uppercase tracking-wider">Locked</span>
                   </div>
                 </div>
               </div>
+
+              {/* Action Buttons — Disabled */}
+              <div className="flex gap-3">
+                <button disabled className="flex-1 py-2 px-4 rounded-xl border-2 border-slate-100 text-[10px] font-black text-slate-300 cursor-not-allowed uppercase tracking-wider select-none">
+                  Redeem
+                </button>
+                <button disabled className="flex-2 py-2 px-6 rounded-xl bg-linear-to-r from-amber-400/40 to-orange-400/40 text-[10px] font-black text-white/70 cursor-not-allowed uppercase tracking-wider select-none">
+                  Collect Point
+                </button>
+              </div>
             </div>
-
-
 
             {/* 3. Attempt Analysis (Ultra-Professional) */}
             <div className="bg-white border border-slate-100 border-b-4 rounded-4xl p-7 shadow-sm flex flex-col hover:border-[#154D57]/20 transition-all duration-300">
@@ -274,31 +297,52 @@ export default function ProfilePage() {
           {/* 5. Performance History (Ultra-Professional Table) */}
           <div className="bg-white border border-slate-100 border-b-4 rounded-[2.5rem] p-8 shadow-sm">
             <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xl font-black text-[#154D57] tracking-tight">Performance History</h3>
-              <button className="text-[10px] font-black text-slate-300 hover:text-[#154D57] transition-colors uppercase tracking-[0.2em]">Full Report</button>
+              <h3 className="text-xl font-black text-[#154D57] tracking-tight">
+                Performance History
+              </h3>
+              <button className="text-[10px] font-black text-slate-300 hover:text-[#154D57] transition-colors uppercase tracking-[0.2em]">
+                Full Report
+              </button>
             </div>
             <div className="overflow-x-auto ring-1 ring-slate-100 rounded-2xl overflow-hidden">
               <table className="w-full text-left">
                 <thead className="bg-slate-50/80">
                   <tr>
-                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em]">Assignment</th>
-                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em]">Date</th>
-                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] text-center">Score</th>
-                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] text-right">Status</th>
+                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em]">
+                      Assignment
+                    </th>
+                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em]">
+                      Date
+                    </th>
+                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] text-center">
+                      Score
+                    </th>
+                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] text-right">
+                      Status
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {allTests && allTests.length > 0 ? (
                     allTests.map((test, index) => (
-                      <tr key={index} className="hover:bg-slate-50/40 transition-colors group">
+                      <tr
+                        key={index}
+                        className="hover:bg-slate-50/40 transition-colors group"
+                      >
                         <td className="px-6 py-5">
                           <div className="flex flex-col">
-                            <span className="text-xs font-black text-[#154D57] group-hover:text-teal-600 transition-colors">{test.name}</span>
-                            <span className="text-[9px] font-bold text-slate-300 uppercase tracking-wider mt-0.5">{test.version}</span>
+                            <span className="text-xs font-black text-[#154D57] group-hover:text-teal-600 transition-colors">
+                              {test.name}
+                            </span>
+                            <span className="text-[9px] font-bold text-slate-300 uppercase tracking-wider mt-0.5">
+                              {test.version}
+                            </span>
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <span className="text-xs font-bold text-slate-500">{test.date}</span>
+                          <span className="text-xs font-bold text-slate-500">
+                            {test.date}
+                          </span>
                         </td>
                         <td className="px-6 py-5 text-center">
                           <span className="inline-flex items-center px-3 py-1 rounded-lg bg-slate-100 text-[#154D57] text-[10px] font-black">
@@ -306,12 +350,20 @@ export default function ProfilePage() {
                           </span>
                         </td>
                         <td className="px-6 py-5 text-right">
-                          <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${
-                            test.percentage >= 80 ? 'bg-teal-50 text-teal-600 border border-teal-100/30' : 
-                            test.percentage >= 50 ? 'bg-indigo-50 text-indigo-600 border border-indigo-100/30' : 
-                            'bg-rose-50 text-rose-600 border border-rose-100/30'
-                          }`}>
-                            {test.percentage >= 80 ? 'Mastery' : test.percentage >= 50 ? 'Passed' : 'Review'}
+                          <span
+                            className={`inline-flex items-center px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${
+                              test.percentage >= 80
+                                ? "bg-teal-50 text-teal-600 border border-teal-100/30"
+                                : test.percentage >= 50
+                                  ? "bg-indigo-50 text-indigo-600 border border-indigo-100/30"
+                                  : "bg-rose-50 text-rose-600 border border-rose-100/30"
+                            }`}
+                          >
+                            {test.percentage >= 80
+                              ? "Mastery"
+                              : test.percentage >= 50
+                                ? "Passed"
+                                : "Review"}
                           </span>
                         </td>
                       </tr>
@@ -321,7 +373,9 @@ export default function ProfilePage() {
                       <td colSpan="4" className="px-6 py-20 text-center">
                         <div className="flex flex-col items-center opacity-10">
                           <FiClipboard className="w-10 h-10 mb-2" />
-                          <p className="text-[10px] font-black uppercase tracking-widest">No Records</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest">
+                            No Records
+                          </p>
                         </div>
                       </td>
                     </tr>
