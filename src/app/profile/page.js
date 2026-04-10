@@ -90,36 +90,54 @@ export default function ProfilePage() {
         {/* --- LEFT & CENTER CONTENT (Grid of Cards) --- */}
         <div className="flex-1 space-y-8 order-2 lg:order-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* 1. Soft Skill (Radar Chart) */}
-            <div className="bg-white rounded-4xl p-8 border border-gray-100 shadow-sm flex flex-col">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-black text-[#154D57]">Soft Skill</h3>
-                <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-300">
-                  <FiActivity className="w-4 h-4" />
+            {/* 1. Learning Streak (Dynamic 7 Days) */}
+            <div className="bg-white rounded-4xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between items-center relative overflow-hidden group min-h-[160px]">
+              <div className="w-full flex justify-between items-center mb-6">
+                <h3 className="text-sm font-black text-[#154D57] uppercase tracking-wider">
+                  Weekly Activity
+                </h3>
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-orange-50 rounded-full">
+                  <span className="text-[10px] font-black text-orange-600 uppercase">
+                    <span className="text-xs mr-0.5">🔥</span>Streak:{" "}
+                    {data?.stats?.currentStreak || 0}{" "}
+                    {data?.stats?.currentStreak === 1 ? "Day" : "Days"}
+                  </span>
                 </div>
               </div>
-              <div className="h-64 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart
-                    cx="50%"
-                    cy="50%"
-                    outerRadius="80%"
-                    data={radarData}
+
+              <div className="w-full flex justify-between items-center gap-2">
+                {data?.streak?.map((day, i) => (
+                  <div
+                    key={i}
+                    className="flex flex-col items-center gap-3 flex-1"
                   >
-                    <PolarGrid stroke="#e5e7eb" />
-                    <PolarAngleAxis
-                      dataKey="subject"
-                      tick={{ fontSize: 10, fontWeight: 800, fill: "#6b7280" }}
-                    />
-                    <Radar
-                      name="Score"
-                      dataKey="A"
-                      stroke="#154D57"
-                      fill="#154D57"
-                      fillOpacity={0.4}
-                    />
-                  </RadarChart>
-                </ResponsiveContainer>
+                    <div
+                      className={`w-full aspect-square max-w-[40px] rounded-2xl flex items-center justify-center transition-all shadow-sm ${day.active ? "bg-[#154D57] text-white" : "bg-gray-50 text-gray-200 border border-gray-100"}`}
+                    >
+                      <FiBook className="w-4 h-4 md:w-5 md:h-5" />
+                    </div>
+                    <span
+                      className={`text-[10px] font-black uppercase ${day.active ? "text-[#154D57]" : "text-gray-300"}`}
+                    >
+                      {day.day}
+                    </span>
+                  </div>
+                ))}
+
+                {!data?.streak &&
+                  [1, 2, 3, 4, 5, 6, 7].map((i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col items-center gap-3 flex-1"
+                    >
+                      <div className="w-full aspect-square max-w-[40px] rounded-2xl bg-gray-50 text-gray-100 border border-gray-100 flex items-center justify-center">
+                        <FiBook className="w-5 h-5" />
+                      </div>
+                      <span className="text-[10px] font-black text-gray-200">
+                        ?
+                      </span>
+                    </div>
+                  ))}
               </div>
             </div>
 
@@ -396,11 +414,13 @@ export default function ProfilePage() {
                 <p className="text-[11px] text-gray-400 font-extrabold uppercase tracking-widest leading-none mb-1">
                   Guardian
                 </p>
-                <h4 className={`text-md font-black ${!user.guardianName ? 'text-gray-300' : 'text-[#154D57]'}`}>
-                  {user.guardianName || 'Guardian not added'}
+                <h4
+                  className={`text-md font-black ${!user.guardianName ? "text-gray-300" : "text-[#154D57]"}`}
+                >
+                  {user.guardianName || "Guardian not added"}
                 </h4>
                 <p className="text-[10px] text-gray-400 font-bold">
-                  {user.guardianContact || 'Contact not specified'}
+                  {user.guardianContact || "Contact not specified"}
                 </p>
               </div>
             </div>
