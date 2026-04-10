@@ -18,6 +18,13 @@ import {
   FiMessageSquare,
   FiActivity,
   FiSearch,
+  FiCheckCircle,
+  FiXCircle,
+  FiTarget,
+  FiZap,
+  FiHelpCircle,
+  FiClipboard,
+  FiFileText,
 } from "react-icons/fi";
 import {
   Radar,
@@ -90,14 +97,14 @@ export default function ProfilePage() {
         {/* --- LEFT & CENTER CONTENT (Grid of Cards) --- */}
         <div className="flex-1 space-y-8 order-2 lg:order-1">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* 1. Learning Streak (Dynamic 7 Days) */}
-            <div className="bg-white rounded-4xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between items-center relative overflow-hidden group min-h-[160px]">
+            {/* 1. Learning Streak (Restored Layout) */}
+            <div className="bg-white border border-slate-100 border-b-4 rounded-4xl p-6 shadow-sm flex flex-col justify-center min-h-[160px] transition-all duration-300">
               <div className="w-full flex justify-between items-center mb-6">
-                <h3 className="text-sm font-black text-[#154D57] uppercase tracking-wider">
+                <h3 className="text-[11px] font-extrabold text-slate-400 uppercase tracking-[0.2em] leading-none">
                   Weekly Activity
                 </h3>
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-orange-50 rounded-full">
-                  <span className="text-[10px] font-black text-orange-600 uppercase">
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-orange-50 rounded-full border border-orange-100/30">
+                  <span className="text-[10px] font-black text-orange-600 uppercase tracking-tight">
                     <span className="text-xs mr-0.5">🔥</span>Streak:{" "}
                     {data?.stats?.currentStreak || 0}{" "}
                     {data?.stats?.currentStreak === 1 ? "Day" : "Days"}
@@ -105,81 +112,145 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              <div className="w-full flex justify-between items-center gap-2">
+              <div className="w-full flex justify-between items-center gap-2 px-1">
                 {data?.streak?.map((day, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col items-center gap-3 flex-1"
-                  >
-                    <div
-                      className={`w-full aspect-square max-w-[40px] rounded-2xl flex items-center justify-center transition-all shadow-sm ${day.active ? "bg-[#154D57] text-white" : "bg-gray-50 text-gray-200 border border-gray-100"}`}
-                    >
-                      <FiBook className="w-4 h-4 md:w-5 md:h-5" />
+                  <div key={i} className="flex flex-col items-center gap-3 flex-1">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-sm ${day.active ? "bg-[#154D57] text-white shadow-[#154D57]/20" : "bg-slate-50 text-slate-300 border border-slate-100/50 hover:bg-white"}`}>
+                      <FiBook className="w-4 h-4 stroke-2" />
                     </div>
-                    <span
-                      className={`text-[10px] font-black uppercase ${day.active ? "text-[#154D57]" : "text-gray-300"}`}
-                    >
+                    <span className={`text-[10px] font-bold uppercase tracking-tighter ${day.active ? "text-[#154D57]" : "text-slate-300"}`}>
                       {day.day}
                     </span>
                   </div>
                 ))}
-
-                {!data?.streak &&
-                  [1, 2, 3, 4, 5, 6, 7].map((i) => (
-                    <div
-                      key={i}
-                      className="flex flex-col items-center gap-3 flex-1"
-                    >
-                      <div className="w-full aspect-square max-w-[40px] rounded-2xl bg-gray-50 text-gray-100 border border-gray-100 flex items-center justify-center">
-                        <FiBook className="w-5 h-5" />
-                      </div>
-                      <span className="text-[10px] font-black text-gray-200">
-                        ?
-                      </span>
-                    </div>
-                  ))}
               </div>
             </div>
-
-            {/* 2. Bidang Minat (Horizontal Progress) */}
-            <div className="bg-white rounded-4xl p-8 border border-gray-100 shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-black text-[#154D57]">Bidang Minat</h3>
-                <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-300">
-                  <FiTrendingUp className="w-4 h-4" />
+            {/* 2. Tests Attempted Summary (Ultra-Professional) */}
+            <div className="bg-white border border-slate-100 border-b-4 rounded-4xl p-7 shadow-sm flex flex-col justify-center min-h-[160px] hover:border-[#154D57]/20 transition-all duration-300">
+              <div className="flex items-center gap-6">
+                <div className="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center text-green-500 border border-green-100/50 shadow-sm">
+                  <FiClipboard className="w-7 h-7 stroke-2" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] mb-1">Tests Attempted</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-4xl font-black text-[#154D57] tracking-tighter">
+                      {data?.stats?.totalTests || 0}
+                    </span>
+                    <span className="text-lg font-bold text-slate-200">
+                      / {data?.stats?.totalUniqueTests || data?.stats?.totalTests || 0}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-6">
-                {subjectStats?.map((s, i) => (
-                  <div key={i} className="space-y-2">
-                    <div className="flex justify-between text-[10px] font-black uppercase text-gray-500">
-                      <span>{s.subject}</span>
-                      <span>{s.score}%</span>
-                    </div>
-                    <div className="h-2 w-full bg-gray-50 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full transition-all duration-1000 ${i % 2 === 0 ? "bg-[#154D57]" : "bg-[#154D57]/40"}`}
-                        style={{ width: `${s.score}%` }}
-                      ></div>
-                    </div>
+            </div>
+
+
+
+            {/* 3. Attempt Analysis (Ultra-Professional) */}
+            <div className="bg-white border border-slate-100 border-b-4 rounded-4xl p-7 shadow-sm flex flex-col hover:border-[#154D57]/20 transition-all duration-300">
+              {/* Header Section */}
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 border border-indigo-100/50 shadow-sm">
+                  <FiHelpCircle className="w-6 h-6 stroke-2" />
+                </div>
+                <div>
+                  <h3 className="text-[10px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] mb-1">
+                    Attempt Analysis
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl font-black text-[#154D57] tracking-tighter">
+                      {data?.attemptAnalysis?.totalQuestionsAttempted || 0}
+                    </span>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase">
+                      <span className="text-teal-600 font-black mr-1">
+                        +{data?.attemptAnalysis?.last7DaysTrend || 0}
+                      </span>{" "}
+                      New
+                    </p>
                   </div>
-                ))}
+                </div>
+              </div>
+
+              {/* Stats Grid - 2x2 */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* Correct */}
+                <div className="bg-slate-50/50 border border-slate-100/50 px-4 py-3 rounded-2xl flex items-center justify-between group hover:bg-white hover:border-green-100 transition-all shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-green-50 text-green-500 flex items-center justify-center border border-green-100/50">
+                      <FiCheckCircle className="w-4 h-4 stroke-2" />
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">
+                      Correct
+                    </span>
+                  </div>
+                  <span className="text-[13px] font-black text-[#154D57]">
+                    {data?.attemptAnalysis?.totalCorrect || 0}
+                  </span>
+                </div>
+
+                {/* Incorrect */}
+                <div className="bg-slate-50/50 border border-slate-100/50 px-4 py-3 rounded-2xl flex items-center justify-between group hover:bg-white hover:border-red-100 transition-all shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center border border-red-100/50">
+                      <FiXCircle className="w-4 h-4 stroke-2" />
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">
+                      Incorrect
+                    </span>
+                  </div>
+                  <span className="text-[13px] font-black text-[#154D57]">
+                    {data?.attemptAnalysis?.totalIncorrect || 0}
+                  </span>
+                </div>
+
+                {/* Accuracy */}
+                <div className="bg-slate-50/50 border border-slate-100/50 px-4 py-3 rounded-2xl flex items-center justify-between group hover:bg-white hover:border-blue-100 transition-all shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100/50">
+                      <FiTarget className="w-4 h-4 stroke-2" />
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">
+                      Accuracy
+                    </span>
+                  </div>
+                  <span className="text-[13px] font-black text-[#154D57]">
+                    {data?.attemptAnalysis?.accuracy || 0}%
+                  </span>
+                </div>
+
+                {/* Speed */}
+                <div className="bg-slate-50/50 border border-slate-100/50 px-4 py-3 rounded-2xl flex items-center justify-between group hover:bg-white hover:border-yellow-100 transition-all shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-yellow-50 text-yellow-500 flex items-center justify-center border border-yellow-100/50">
+                      <FiZap className="w-4 h-4 stroke-2" />
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">
+                      Speed
+                    </span>
+                  </div>
+                  <span className="text-[13px] font-black text-[#154D57]">
+                    ---
+                  </span>
+                </div>
               </div>
             </div>
 
-            {/* 3. Waktu Belajar (Donut) */}
-            <div className="bg-white rounded-4xl p-8 border border-gray-100 shadow-sm relative overflow-hidden">
-              <h3 className="font-black text-[#154D57] mb-6">Waktu Belajar</h3>
-              <div className="h-48 flex items-center justify-center relative">
+            {/* 4. Engagement Analysis (Ultra-Professional) */}
+            <div className="bg-white border border-slate-100 border-b-4 rounded-4xl p-7 shadow-sm flex flex-col hover:border-[#154D57]/20 transition-all duration-300">
+              <h3 className="text-[10px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] mb-8">
+                Engagement
+              </h3>
+              <div className="h-44 flex items-center justify-center relative">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={pieData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={50}
-                      outerRadius={70}
-                      paddingAngle={5}
+                      innerRadius={45}
+                      outerRadius={65}
+                      paddingAngle={8}
                       dataKey="value"
                     >
                       {pieData.map((entry, index) => (
@@ -189,31 +260,79 @@ export default function ProfilePage() {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <p className="text-[10px] font-black text-gray-400 uppercase">
+                  <p className="text-[9px] font-black text-gray-300 uppercase">
                     Total
                   </p>
                   <h4 className="text-xl font-black text-[#154D57]">
-                    {stats?.totalTests * 2 || 0} jam
+                    {stats?.totalTests * 2 || 0}h
                   </h4>
                 </div>
               </div>
-              <div className="flex justify-center gap-6 mt-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#154D57]"></div>
-                  <span className="text-[10px] font-black uppercase text-gray-400">
-                    Online
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#FF7F50]"></div>
-                  <span className="text-[10px] font-black uppercase text-gray-400">
-                    Offline
-                  </span>
-                </div>
-              </div>
             </div>
+          </div>
 
-            {/* 4. Sedang Berlangsung (Active Tests) */}
+          {/* 5. Performance History (Ultra-Professional Table) */}
+          <div className="bg-white border border-slate-100 border-b-4 rounded-[2.5rem] p-8 shadow-sm">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xl font-black text-[#154D57] tracking-tight">Performance History</h3>
+              <button className="text-[10px] font-black text-slate-300 hover:text-[#154D57] transition-colors uppercase tracking-[0.2em]">Full Report</button>
+            </div>
+            <div className="overflow-x-auto ring-1 ring-slate-100 rounded-2xl overflow-hidden">
+              <table className="w-full text-left">
+                <thead className="bg-slate-50/80">
+                  <tr>
+                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em]">Assignment</th>
+                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em]">Date</th>
+                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] text-center">Score</th>
+                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] text-right">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {allTests && allTests.length > 0 ? (
+                    allTests.map((test, index) => (
+                      <tr key={index} className="hover:bg-slate-50/40 transition-colors group">
+                        <td className="px-6 py-5">
+                          <div className="flex flex-col">
+                            <span className="text-xs font-black text-[#154D57] group-hover:text-teal-600 transition-colors">{test.name}</span>
+                            <span className="text-[9px] font-bold text-slate-300 uppercase tracking-wider mt-0.5">{test.version}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5">
+                          <span className="text-xs font-bold text-slate-500">{test.date}</span>
+                        </td>
+                        <td className="px-6 py-5 text-center">
+                          <span className="inline-flex items-center px-3 py-1 rounded-lg bg-slate-100 text-[#154D57] text-[10px] font-black">
+                            {test.score}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 text-right">
+                          <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${
+                            test.percentage >= 80 ? 'bg-teal-50 text-teal-600 border border-teal-100/30' : 
+                            test.percentage >= 50 ? 'bg-indigo-50 text-indigo-600 border border-indigo-100/30' : 
+                            'bg-rose-50 text-rose-600 border border-rose-100/30'
+                          }`}>
+                            {test.percentage >= 80 ? 'Mastery' : test.percentage >= 50 ? 'Passed' : 'Review'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="px-6 py-20 text-center">
+                        <div className="flex flex-col items-center opacity-10">
+                          <FiClipboard className="w-10 h-10 mb-2" />
+                          <p className="text-[10px] font-black uppercase tracking-widest">No Records</p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* 6. Active Courses */}
             <div className="bg-white rounded-4xl p-8 border border-gray-100 shadow-sm overflow-hidden">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-black text-[#154D57]">
@@ -316,7 +435,6 @@ export default function ProfilePage() {
                   <FiAward className="w-4 h-4" />
                 </div>
               </div>
-
               <div>
                 <h2 className="text-xl font-black text-[#154D57]">
                   {user.displayName}
