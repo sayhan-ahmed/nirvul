@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useState, useEffect } from "react";
 import {
@@ -43,7 +44,8 @@ import {
 } from "recharts";
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
+  const { showToast } = useToast();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -95,15 +97,33 @@ export default function ProfilePage() {
     e.preventDefault();
     setSaving(true);
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.uid}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.uid}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(profileForm),
       });
+
+      if (!response.ok) throw new Error("Update failed");
+
+      // Refresh global user state to sync other components (like sidebar)
+      await refreshUser();
+      
       setSaved(true);
+      showToast("Profile updated successfully!", "success");
+      
+      // Clear form fields as requested
+      setProfileForm({
+        institution: "",
+        location: "",
+        bio: "",
+        guardianName: "",
+        guardianContact: "",
+      });
+
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
       console.error("Failed to update profile:", err);
+      showToast("Failed to update profile. Please try again.", "error");
     } finally {
       setSaving(false);
     }
@@ -220,8 +240,8 @@ export default function ProfilePage() {
           >
             {/* Form Header */}
             <div className="px-6 pt-6 pb-4 border-b border-slate-100">
-              <h2 className="text-xl font-black text-[#154D57] tracking-tight">Edit Profile</h2>
-              <p className="text-xs font-bold text-slate-300 mt-1">Update your personal information</p>
+              <h2 className="text-2xl font-black text-[#154D57] tracking-tight">Edit Profile</h2>
+              <p className="text-sm font-bold text-slate-400 mt-1">Update your personal information</p>
             </div>
 
             {/* Form Fields */}
@@ -230,7 +250,7 @@ export default function ProfilePage() {
               {/* Institution + Location side by side */}
               <div className="grid grid-cols-2 gap-5">
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 text-[11px] font-extrabold text-[#154D57]/60 uppercase tracking-[0.2em]">
+                  <label className="flex items-center gap-2 text-xs font-extrabold text-[#154D57]/60 uppercase tracking-widest">
                     <FiBriefcase className="w-3.5 h-3.5" /> Institution
                   </label>
                   <input
@@ -242,7 +262,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-2 text-[11px] font-extrabold text-[#154D57]/60 uppercase tracking-[0.2em]">
+                  <label className="flex items-center gap-2 text-xs font-extrabold text-[#154D57]/60 uppercase tracking-widest">
                     <FiMapPin className="w-3.5 h-3.5" /> Location
                   </label>
                   <input
@@ -257,7 +277,7 @@ export default function ProfilePage() {
 
               {/* Bio */}
               <div className="space-y-1.5">
-                <label className="flex items-center gap-2 text-[11px] font-extrabold text-[#154D57]/60 uppercase tracking-[0.2em]">
+                <label className="flex items-center gap-2 text-xs font-extrabold text-[#154D57]/60 uppercase tracking-widest">
                   <FiMessageSquare className="w-3.5 h-3.5" /> About Me
                 </label>
                 <textarea
@@ -271,7 +291,7 @@ export default function ProfilePage() {
 
               {/* Guardian section */}
               <div className="pt-4 border-t border-slate-100">
-                <p className="text-[11px] font-extrabold text-[#154D57]/60 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                <p className="text-xs font-extrabold text-[#154D57]/60 uppercase tracking-widest mb-4 flex items-center gap-2">
                   <FiUser className="w-3.5 h-3.5" /> Guardian Info
                 </p>
                 <div className="grid grid-cols-2 gap-5">
@@ -285,7 +305,7 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     value={profileForm.guardianContact}
-                    onChange={(e) => setProfileForm({ ...profileForm, guardianContact: e.target.value })}
+                    onChange={(e) => setProfileForm({ ...profileForm, guardianContact: e.target.value.replace(/[^0-9]/g, "") })}
                     placeholder="Phone number"
                     className="w-full px-4 py-3 rounded-xl border border-slate-100 bg-slate-50/50 text-sm font-bold text-[#154D57] placeholder:text-slate-300 focus:outline-none focus:border-[#154D57]/30 focus:bg-white transition-all"
                   />

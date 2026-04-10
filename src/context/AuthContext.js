@@ -77,8 +77,32 @@ export const AuthProvider = ({ children }) => {
         await signOut(auth);
     };
 
+    const refreshUser = async () => {
+        if (!user) return;
+        try {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+            const response = await fetch(`${apiUrl}/api/users/${user.uid}`);
+            
+            if (!response.ok) throw new Error('Refresh failed');
+            
+            const mongoUser = await response.json();
+            
+            setUser({
+                ...user,
+                role: mongoUser.role || 'student',
+                institution: mongoUser.institution || '',
+                location: mongoUser.location || '',
+                bio: mongoUser.bio || '',
+                guardianName: mongoUser.guardianName || '',
+                guardianContact: mongoUser.guardianContact || ''
+            });
+        } catch (error) {
+            console.error('Refresh failed', error);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, logout, refreshUser, loading }}>
             {loading ? null : children}
         </AuthContext.Provider>
     );
