@@ -46,6 +46,15 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    institution: "",
+    location: "",
+    bio: "",
+    guardianName: "",
+    guardianContact: "",
+  });
 
   useEffect(() => {
     if (!user) return;
@@ -68,6 +77,37 @@ export default function ProfilePage() {
 
     fetchProfileData();
   }, [user]);
+
+  // Sync form with user data
+  useEffect(() => {
+    if (user) {
+      setProfileForm({
+        institution: user.institution || "",
+        location: user.location || "",
+        bio: user.bio || "",
+        guardianName: user.guardianName || "",
+        guardianContact: user.guardianContact || "",
+      });
+    }
+  }, [user]);
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${user.uid}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(profileForm),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (!user) return null;
 
@@ -93,9 +133,11 @@ export default function ProfilePage() {
 
   return (
     <DashboardLayout>
-      <div className="flex flex-col lg:flex-row gap-8 pb-10 animate-in fade-in duration-1000">
-        {/* --- LEFT & CENTER CONTENT (Grid of Cards) --- */}
-        <div className="flex-1 space-y-8 order-2 lg:order-1">
+      {/* Main Layout */}
+      <div className="flex flex-col lg:flex-row lg:items-stretch gap-8 pb-10 animate-in fade-in duration-1000">
+        {/* Left: Cards + Form */}
+        <div className="flex-1 flex flex-col gap-8 order-2 lg:order-1">
+          {/* Top 2 cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* 1. Learning Streak (Restored Layout) */}
             <div className="bg-white border border-slate-100 border-b-4 rounded-4xl p-6 shadow-sm flex flex-col justify-center min-h-[160px] transition-all duration-300">
@@ -169,310 +211,108 @@ export default function ProfilePage() {
                 </button>
               </div>
             </div>
-
-            {/* 3. Attempt Analysis (Ultra-Professional) */}
-            <div className="bg-white border border-slate-100 border-b-4 rounded-4xl p-7 shadow-sm flex flex-col hover:border-[#154D57]/20 transition-all duration-300">
-              {/* Header Section */}
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 border border-indigo-100/50 shadow-sm">
-                  <FiHelpCircle className="w-6 h-6 stroke-2" />
-                </div>
-                <div>
-                  <h3 className="text-[10px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] mb-1">
-                    Attempt Analysis
-                  </h3>
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl font-black text-[#154D57] tracking-tighter">
-                      {data?.attemptAnalysis?.totalQuestionsAttempted || 0}
-                    </span>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">
-                      <span className="text-teal-600 font-black mr-1">
-                        +{data?.attemptAnalysis?.last7DaysTrend || 0}
-                      </span>{" "}
-                      New
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Stats Grid - 2x2 */}
-              <div className="grid grid-cols-2 gap-3">
-                {/* Correct */}
-                <div className="bg-slate-50/50 border border-slate-100/50 px-4 py-3 rounded-2xl flex items-center justify-between group hover:bg-white hover:border-green-100 transition-all shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-green-50 text-green-500 flex items-center justify-center border border-green-100/50">
-                      <FiCheckCircle className="w-4 h-4 stroke-2" />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">
-                      Correct
-                    </span>
-                  </div>
-                  <span className="text-[13px] font-black text-[#154D57]">
-                    {data?.attemptAnalysis?.totalCorrect || 0}
-                  </span>
-                </div>
-
-                {/* Incorrect */}
-                <div className="bg-slate-50/50 border border-slate-100/50 px-4 py-3 rounded-2xl flex items-center justify-between group hover:bg-white hover:border-red-100 transition-all shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center border border-red-100/50">
-                      <FiXCircle className="w-4 h-4 stroke-2" />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">
-                      Incorrect
-                    </span>
-                  </div>
-                  <span className="text-[13px] font-black text-[#154D57]">
-                    {data?.attemptAnalysis?.totalIncorrect || 0}
-                  </span>
-                </div>
-
-                {/* Accuracy */}
-                <div className="bg-slate-50/50 border border-slate-100/50 px-4 py-3 rounded-2xl flex items-center justify-between group hover:bg-white hover:border-blue-100 transition-all shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100/50">
-                      <FiTarget className="w-4 h-4 stroke-2" />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">
-                      Accuracy
-                    </span>
-                  </div>
-                  <span className="text-[13px] font-black text-[#154D57]">
-                    {data?.attemptAnalysis?.accuracy || 0}%
-                  </span>
-                </div>
-
-                {/* Speed */}
-                <div className="bg-slate-50/50 border border-slate-100/50 px-4 py-3 rounded-2xl flex items-center justify-between group hover:bg-white hover:border-yellow-100 transition-all shadow-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-yellow-50 text-yellow-500 flex items-center justify-center border border-yellow-100/50">
-                      <FiZap className="w-4 h-4 stroke-2" />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">
-                      Speed
-                    </span>
-                  </div>
-                  <span className="text-[13px] font-black text-[#154D57]">
-                    ---
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* 4. Engagement Analysis (Ultra-Professional) */}
-            <div className="bg-white border border-slate-100 border-b-4 rounded-4xl p-7 shadow-sm flex flex-col hover:border-[#154D57]/20 transition-all duration-300">
-              <h3 className="text-[10px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] mb-8">
-                Engagement
-              </h3>
-              <div className="h-44 flex items-center justify-center relative">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={45}
-                      outerRadius={65}
-                      paddingAngle={8}
-                      dataKey="value"
-                    >
-                      {pieData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <p className="text-[9px] font-black text-gray-300 uppercase">
-                    Total
-                  </p>
-                  <h4 className="text-xl font-black text-[#154D57]">
-                    {stats?.totalTests * 2 || 0}h
-                  </h4>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* 5. Performance History (Ultra-Professional Table) */}
-          <div className="bg-white border border-slate-100 border-b-4 rounded-[2.5rem] p-8 shadow-sm">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xl font-black text-[#154D57] tracking-tight">
-                Performance History
-              </h3>
-              <button className="text-[10px] font-black text-slate-300 hover:text-[#154D57] transition-colors uppercase tracking-[0.2em]">
-                Full Report
+          {/* Edit Profile Form */}
+          <form
+            onSubmit={handleProfileUpdate}
+            className="bg-white border border-slate-100 rounded-[2.5rem] overflow-hidden shadow-xl flex flex-col flex-1"
+          >
+            {/* Form Header */}
+            <div className="px-6 pt-6 pb-4 border-b border-slate-100">
+              <h2 className="text-xl font-black text-[#154D57] tracking-tight">Edit Profile</h2>
+              <p className="text-xs font-bold text-slate-300 mt-1">Update your personal information</p>
+            </div>
+
+            {/* Form Fields */}
+            <div className="px-6 py-5 space-y-5 flex-1">
+
+              {/* Institution + Location side by side */}
+              <div className="grid grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-2 text-[11px] font-extrabold text-[#154D57]/60 uppercase tracking-[0.2em]">
+                    <FiBriefcase className="w-3.5 h-3.5" /> Institution
+                  </label>
+                  <input
+                    type="text"
+                    value={profileForm.institution}
+                    onChange={(e) => setProfileForm({ ...profileForm, institution: e.target.value })}
+                    placeholder="School or college"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-100 bg-slate-50/50 text-sm font-bold text-[#154D57] placeholder:text-slate-300 focus:outline-none focus:border-[#154D57]/30 focus:bg-white transition-all"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-2 text-[11px] font-extrabold text-[#154D57]/60 uppercase tracking-[0.2em]">
+                    <FiMapPin className="w-3.5 h-3.5" /> Location
+                  </label>
+                  <input
+                    type="text"
+                    value={profileForm.location}
+                    onChange={(e) => setProfileForm({ ...profileForm, location: e.target.value })}
+                    placeholder="City, Country"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-100 bg-slate-50/50 text-sm font-bold text-[#154D57] placeholder:text-slate-300 focus:outline-none focus:border-[#154D57]/30 focus:bg-white transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Bio */}
+              <div className="space-y-1.5">
+                <label className="flex items-center gap-2 text-[11px] font-extrabold text-[#154D57]/60 uppercase tracking-[0.2em]">
+                  <FiMessageSquare className="w-3.5 h-3.5" /> About Me
+                </label>
+                <textarea
+                  value={profileForm.bio}
+                  onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
+                  placeholder="Write a short bio..."
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-100 bg-slate-50/50 text-sm font-bold text-[#154D57] placeholder:text-slate-300 focus:outline-none focus:border-[#154D57]/30 focus:bg-white transition-all resize-none"
+                />
+              </div>
+
+              {/* Guardian section */}
+              <div className="pt-4 border-t border-slate-100">
+                <p className="text-[11px] font-extrabold text-[#154D57]/60 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                  <FiUser className="w-3.5 h-3.5" /> Guardian Info
+                </p>
+                <div className="grid grid-cols-2 gap-5">
+                  <input
+                    type="text"
+                    value={profileForm.guardianName}
+                    onChange={(e) => setProfileForm({ ...profileForm, guardianName: e.target.value })}
+                    placeholder="Guardian's name"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-100 bg-slate-50/50 text-sm font-bold text-[#154D57] placeholder:text-slate-300 focus:outline-none focus:border-[#154D57]/30 focus:bg-white transition-all"
+                  />
+                  <input
+                    type="text"
+                    value={profileForm.guardianContact}
+                    onChange={(e) => setProfileForm({ ...profileForm, guardianContact: e.target.value })}
+                    placeholder="Phone number"
+                    className="w-full px-4 py-3 rounded-xl border border-slate-100 bg-slate-50/50 text-sm font-bold text-[#154D57] placeholder:text-slate-300 focus:outline-none focus:border-[#154D57]/30 focus:bg-white transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="px-6 pb-6 mt-auto">
+              <button
+                type="submit"
+                disabled={saving}
+                className={`w-full py-4 rounded-xl text-xs font-black uppercase tracking-[0.2em] transition-all duration-300 ${
+                  saved
+                    ? "bg-green-500 text-white shadow-lg shadow-green-100"
+                    : "bg-[#154D57] text-white hover:bg-[#1a5f6b] shadow-lg shadow-[#154D57]/20 active:scale-95"
+                } disabled:opacity-60 disabled:cursor-not-allowed`}
+              >
+                {saving ? "Saving..." : saved ? "✓ Saved Successfully" : "Save Changes"}
               </button>
             </div>
-            <div className="overflow-x-auto ring-1 ring-slate-100 rounded-2xl overflow-hidden">
-              <table className="w-full text-left">
-                <thead className="bg-slate-50/80">
-                  <tr>
-                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em]">
-                      Assignment
-                    </th>
-                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em]">
-                      Date
-                    </th>
-                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] text-center">
-                      Score
-                    </th>
-                    <th className="px-6 py-5 text-[9px] font-extrabold text-[#154D57]/50 uppercase tracking-[0.2em] text-right">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {allTests && allTests.length > 0 ? (
-                    allTests.map((test, index) => (
-                      <tr
-                        key={index}
-                        className="hover:bg-slate-50/40 transition-colors group"
-                      >
-                        <td className="px-6 py-5">
-                          <div className="flex flex-col">
-                            <span className="text-xs font-black text-[#154D57] group-hover:text-teal-600 transition-colors">
-                              {test.name}
-                            </span>
-                            <span className="text-[9px] font-bold text-slate-300 uppercase tracking-wider mt-0.5">
-                              {test.version}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-5">
-                          <span className="text-xs font-bold text-slate-500">
-                            {test.date}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5 text-center">
-                          <span className="inline-flex items-center px-3 py-1 rounded-lg bg-slate-100 text-[#154D57] text-[10px] font-black">
-                            {test.score}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5 text-right">
-                          <span
-                            className={`inline-flex items-center px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${
-                              test.percentage >= 80
-                                ? "bg-teal-50 text-teal-600 border border-teal-100/30"
-                                : test.percentage >= 50
-                                  ? "bg-indigo-50 text-indigo-600 border border-indigo-100/30"
-                                  : "bg-rose-50 text-rose-600 border border-rose-100/30"
-                            }`}
-                          >
-                            {test.percentage >= 80
-                              ? "Mastery"
-                              : test.percentage >= 50
-                                ? "Passed"
-                                : "Review"}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="4" className="px-6 py-20 text-center">
-                        <div className="flex flex-col items-center opacity-10">
-                          <FiClipboard className="w-10 h-10 mb-2" />
-                          <p className="text-[10px] font-black uppercase tracking-widest">
-                            No Records
-                          </p>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* 6. Active Courses */}
-            <div className="bg-white rounded-4xl p-8 border border-gray-100 shadow-sm overflow-hidden">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="font-black text-[#154D57]">
-                  Sedang Berlangsung
-                </h3>
-                <span className="text-[10px] font-black text-gray-300">
-                  6 kursus aktif
-                </span>
-              </div>
-              <div className="space-y-4">
-                {allTests?.slice(0, 3).map((test, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-4 p-3 rounded-2xl border border-gray-50 hover:bg-gray-50 transition-all group"
-                  >
-                    <div
-                      className={`w-8 h-12 rounded-lg bg-current ${i % 2 === 0 ? "text-[#154D57]" : "text-[#FF7F50]"} opacity-20`}
-                    ></div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-black text-[#154D57] truncate">
-                        {test.name}
-                      </h4>
-                      <p className="text-[8px] font-bold text-gray-400">
-                        {test.date}
-                      </p>
-                    </div>
-                    <FiChevronRight className="text-gray-200 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Row (Teacher & Reward) */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-            <div className="md:col-span-3 bg-white rounded-4xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between">
-              <div>
-                <h3 className="font-black text-[#154D57] mb-6">
-                  Riwayat Pengajar
-                </h3>
-                <div className="flex flex-wrap gap-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="flex flex-col items-center gap-1">
-                      <div className="w-12 h-12 rounded-2xl bg-gray-100 overflow-hidden border-2 border-white shadow-sm ring-1 ring-gray-100">
-                        <img
-                          src={`https://i.pravatar.cc/150?u=${i + 20}`}
-                          alt="teacher"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <span className="text-[9px] font-bold text-gray-400">
-                        Sir {i}
-                      </span>
-                    </div>
-                  ))}
-                  <div className="w-12 h-12 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-100 flex items-center justify-center text-gray-300">
-                    +
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="md:col-span-2 bg-white rounded-4xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between">
-              <div>
-                <h3 className="font-black text-[#154D57] mb-6">Reward</h3>
-                <div className="grid grid-cols-5 gap-2">
-                  {achievements?.map((ach, i) => (
-                    <div
-                      key={i}
-                      className="w-8 h-8 rounded-lg bg-[#154D57]/5 flex items-center justify-center text-[16px] border border-gray-50 hover:scale-110 transition-transform cursor-help grayscale hover:grayscale-0"
-                      title={ach.title}
-                    >
-                      {ach.icon}
-                    </div>
-                  ))}
-                  <div className="w-8 h-8 rounded-lg border border-dashed border-gray-200 flex items-center justify-center text-gray-200 text-xs">
-                    ?
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          </form>
         </div>
 
-        {/* --- RIGHT SIDEBAR (Unified Profile Card) --- */}
+        {/* Right Sidebar — Profile Card */}
         <div className="w-full lg:w-80 order-1 lg:order-2">
-          <div className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-xl flex flex-col">
+          <div className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-xl flex flex-col h-full">
             {/* 1. Identity Header */}
             <div className="p-8 text-center space-y-6">
               <div className="relative inline-block">
