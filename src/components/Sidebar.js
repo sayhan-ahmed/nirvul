@@ -35,7 +35,7 @@ export default function Sidebar() {
     { id: 'tests', label: 'Take a Test', path: '/tests', icon: <FiBookOpen className="w-5 h-5" /> },
     { id: 'results', label: 'Results', path: '/results', icon: <FiPieChart className="w-5 h-5" />, disabled: true },
     { id: 'suggestions', label: 'Suggestions', path: '/suggestions', icon: <FiMessageSquare className="w-5 h-5" /> },
-    { id: 'profile', label: 'My Profile', path: '/profile', icon: <FiSettings className="w-5 h-5" />, disabled: true },
+    { id: 'profile', label: 'My Profile', path: '/profile', icon: <FiUsers className="w-5 h-5" /> },
   ];
 
   const handleLogout = async () => {

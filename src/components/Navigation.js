@@ -74,7 +74,7 @@ export default function Navigation() {
     router.push("/");
   };
 
-  const hideOnRoutes = ["/dashboard"];
+  const hideOnRoutes = ["/dashboard", "/profile", "/tests", "/suggestions", "/results", "/admin"];
   if (!user || hideOnRoutes.includes(pathname) || isExamActive) return null;
 
   const today = new Date().toLocaleDateString("en-GB", {

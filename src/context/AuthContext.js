@@ -38,7 +38,9 @@ export const AuthProvider = ({ children }) => {
                         email: firebaseUser.email,
                         displayName: firebaseUser.displayName,
                         photoURL: firebaseUser.photoURL,
-                        role: mongoUser.role || 'student'
+                        role: mongoUser.role || 'student',
+                        institution: mongoUser.institution || '',
+                        location: mongoUser.location || ''
                     });
                 } catch (error) {
                     console.error('Back-end sync failed', error);
