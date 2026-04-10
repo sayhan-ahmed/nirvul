@@ -16,8 +16,9 @@ export const AuthProvider = ({ children }) => {
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             if (firebaseUser) {
                 try {
-                    // Sync with MongoDB back-end
-                    const response = await fetch('http://localhost:5001/api/users', {
+                    // Sync with MongoDB back-end using dynamic API URL
+                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+                    const response = await fetch(`${apiUrl}/api/users`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -28,6 +29,8 @@ export const AuthProvider = ({ children }) => {
                         })
                     });
                     
+                    if (!response.ok) throw new Error('Sync failed');
+                    
                     const mongoUser = await response.json();
                     
                     setUser({
@@ -35,11 +38,10 @@ export const AuthProvider = ({ children }) => {
                         email: firebaseUser.email,
                         displayName: firebaseUser.displayName,
                         photoURL: firebaseUser.photoURL,
-                        role: mongoUser.role // Role from MongoDB
+                        role: mongoUser.role || 'student'
                     });
                 } catch (error) {
                     console.error('Back-end sync failed', error);
-                    // Fallback to basic firebase data
                     setUser({
                         uid: firebaseUser.uid,
                         email: firebaseUser.email,

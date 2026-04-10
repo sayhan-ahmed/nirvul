@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   FiArrowRight,
   FiBookOpen,
@@ -7,6 +8,36 @@ import {
 import Link from "next/link";
 
 export default function AdminDashboard({ user }) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAdminStats = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/dashboard-stats`);
+        if (response.ok) {
+          const result = await response.json();
+          setData(result);
+        }
+      } catch (err) {
+        console.error("Error fetching admin stats:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAdminStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#154D57]"></div>
+      </div>
+    );
+  }
+
+  const { stats, skillGraph, topMembers, progress } = data || {};
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
       {/* --- Main Feature Card (Left Column) --- */}
@@ -28,7 +59,7 @@ export default function AdminDashboard({ user }) {
           <div className="grid grid-cols-2 gap-3 md:gap-4">
             <div className="bg-white/5 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-sm border border-white/10">
               <h4 className="text-xl md:text-2xl font-black mb-0.5 md:mb-1">
-                1.209
+                {stats?.totalStudents || 0}
               </h4>
               <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-white/40">
                 Active Students
@@ -36,10 +67,10 @@ export default function AdminDashboard({ user }) {
             </div>
             <div className="bg-white/5 rounded-2xl md:rounded-3xl p-4 md:p-5 backdrop-blur-sm border border-white/10">
               <h4 className="text-xl md:text-2xl font-black mb-0.5 md:mb-1">
-                340
+                {stats?.activeCourses || 0}
               </h4>
-              <p className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-white/40">
-                Active Courses
+              <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-white/40">
+                Active Subjects
               </p>
             </div>
           </div>
@@ -68,101 +99,51 @@ export default function AdminDashboard({ user }) {
               strokeWidth="0.5"
               strokeOpacity="0.1"
             />
-            <polygon
-              points="50,20 80,42 67,80 33,80 20,42"
-              fill="none"
-              stroke="#154D57"
-              strokeWidth="0.5"
-              strokeOpacity="0.1"
-            />
-            <line
-              x1="50"
-              y1="50"
-              x2="50"
-              y2="5"
-              stroke="#154D57"
-              strokeWidth="0.5"
-              strokeOpacity="0.1"
-            />
-            <line
-              x1="50"
-              y1="50"
-              x2="95"
-              y2="35"
-              stroke="#154D57"
-              strokeWidth="0.5"
-              strokeOpacity="0.1"
-            />
-            <line
-              x1="50"
-              y1="50"
-              x2="77"
-              y2="90"
-              stroke="#154D57"
-              strokeWidth="0.5"
-              strokeOpacity="0.1"
-            />
-            <line
-              x1="50"
-              y1="50"
-              x2="23"
-              y2="90"
-              stroke="#154D57"
-              strokeWidth="0.5"
-              strokeOpacity="0.1"
-            />
-            <line
-              x1="50"
-              y1="50"
-              x2="5"
-              y2="35"
-              stroke="#154D57"
-              strokeWidth="0.5"
-              strokeOpacity="0.1"
-            />
-            <polygon
-              points="50,15 85,40 70,85 40,75 15,30"
-              fill="#154D57"
-              fillOpacity="0.1"
-              stroke="#154D57"
-              strokeWidth="1.5"
-            />
-            <text
-              x="50"
-              y="2"
-              textAnchor="middle"
-              fontSize="3"
-              fontWeight="bold"
-              fill="#154D57"
-            >
-              Intro to IS: 15
-            </text>
-            <text
-              x="96"
-              y="35"
-              textAnchor="start"
-              fontSize="3"
-              fontWeight="bold"
-              fill="#154D57"
-            >
-              Analysis: 18
-            </text>
-            <text
-              x="5"
-              y="35"
-              textAnchor="end"
-              fontSize="3"
-              fontWeight="bold"
-              fill="#154D57"
-            >
-              Web Dev: 17
-            </text>
+            {/* Dynamic radar points calculation */}
+            {(() => {
+                const center = 50;
+                const radius = 45;
+                const points = (skillGraph || []).map((s, i) => {
+                    const angle = (i * 72 - 90) * (Math.PI / 180);
+                    const val = (s.score / 100) * radius;
+                    return `${center + Math.cos(angle) * val},${center + Math.sin(angle) * val}`;
+                }).join(" ");
+                
+                return points ? (
+                    <polygon
+                        points={points}
+                        fill="#154D57"
+                        fillOpacity="0.1"
+                        stroke="#154D57"
+                        strokeWidth="1.5"
+                    />
+                ) : null;
+            })()}
+            
+            {(skillGraph || []).map((s, i) => {
+                const angle = (i * 72 - 90) * (Math.PI / 180);
+                const x = 50 + Math.cos(angle) * 48;
+                const y = 50 + Math.sin(angle) * 48;
+                return (
+                    <text
+                        key={i}
+                        x={x}
+                        y={y}
+                        textAnchor={x > 50 ? "start" : x < 50 ? "end" : "middle"}
+                        fontSize="3.5"
+                        fontWeight="black"
+                        fill="#154D57"
+                    >
+                        {s.subject.split(' ')[0]}: {s.score}%
+                    </text>
+                );
+            })}
           </svg>
         </div>
       </div>
 
       {/* --- Right Column (Member List) --- */}
-      <div className="lg:col-span-1 bg-white rounded-4xl md:rounded-[2.5rem] p-6 md:p-10 border border-[#154D57]/5 shadow-sm overflow-hidden">
+      <div className="lg:col-span-1 bg-white rounded-4xl md:rounded-[2.5rem] p-6 md:p-10 border border-[#154D57]/5 shadow-sm overflow-hidden text-[#154D57]">
         <div className="relative mb-6 md:mb-8">
           <FiSearch className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
@@ -172,39 +153,21 @@ export default function AdminDashboard({ user }) {
           />
         </div>
         <div className="space-y-5 md:space-y-6">
-          {[
-            {
-              name: "Budiarti rohman",
-              score: 96,
-              color: "bg-purple-100 text-purple-600",
-            },
-            {
-              name: "Ningrum Lea",
-              score: 85,
-              color: "bg-blue-100 text-blue-600",
-            },
-            {
-              name: "Michael mart",
-              score: 54,
-              color: "bg-orange-100 text-orange-600",
-            },
-            {
-              name: "Fikrie tonic",
-              score: 30,
-              color: "bg-red-100 text-red-600",
-            },
-            {
-              name: "Lucky Minals",
-              score: 20,
-              color: "bg-gray-100 text-gray-600",
-            },
-          ].map((member, i) => (
+          {topMembers && topMembers.length > 0 ? topMembers.map((member, i) => (
             <div
               key={i}
               className="flex items-center justify-between group cursor-pointer"
             >
               <div className="flex items-center gap-3 md:gap-4">
-                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-100 border-2 border-white shadow-sm overflow-hidden group-hover:scale-110 transition-transform"></div>
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-100 border-2 border-white shadow-sm overflow-hidden group-hover:scale-110 transition-transform">
+                  {member.photoURL ? (
+                    <img src={member.photoURL} alt={member.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-[#154D57]/5 flex items-center justify-center text-[#154D57] font-bold text-xs">
+                      {member.name.charAt(0)}
+                    </div>
+                  )}
+                </div>
                 <h4 className="text-xs md:text-sm font-bold text-[#154D57] group-hover:translate-x-1 transition-transform">
                   {member.name}
                 </h4>
@@ -215,14 +178,16 @@ export default function AdminDashboard({ user }) {
                 {member.score}
               </span>
             </div>
-          ))}
+          )) : (
+            <p className="text-center text-gray-400 py-10 font-bold">No ranking data</p>
+          )}
         </div>
       </div>
 
       {/* --- Lower Grid (Statistics) --- */}
       <div className="lg:col-span-2 bg-white rounded-4xl md:rounded-[2.5rem] p-6 md:p-10 border border-[#154D57]/5 shadow-sm">
-        <div className="flex justify-between items-center mb-8 md:mb-10">
-          <h3 className="text-lg md:text-xl font-black text-[#154D57]">
+        <div className="flex justify-between items-center mb-8 md:mb-10 text-[#154D57]">
+          <h3 className="text-lg md:text-xl font-black ">
             Exam progress statistics
           </h3>
           <div className="flex items-center gap-2 md:gap-3 bg-gray-50 px-3 md:px-4 py-1.5 md:py-2 rounded-xl text-[10px] md:text-xs font-bold text-gray-500 cursor-pointer">
@@ -230,7 +195,7 @@ export default function AdminDashboard({ user }) {
           </div>
         </div>
         <div className="h-48 md:h-64 flex items-end gap-3 md:gap-6 px-2 md:px-4">
-          {[40, 70, 50, 90, 80, 60, 45].map((h, i) => (
+          {progress && progress.length > 0 ? progress.map((p, i) => (
             <div
               key={i}
               className="flex-1 flex flex-col items-center gap-2 md:gap-3 group"
@@ -241,14 +206,16 @@ export default function AdminDashboard({ user }) {
               >
                 <div
                   className="absolute bottom-0 w-full bg-[#154D57] rounded-t-lg md:rounded-t-xl transition-all duration-1000 group-hover:brightness-125"
-                  style={{ height: `${h}%` }}
+                  style={{ height: `${(p.value / Math.max(...progress.map(x => x.value), 1)) * 100}%` }}
                 ></div>
               </div>
               <span className="text-[8px] md:text-[10px] font-bold text-gray-400">
-                Wk {i + 1}
+                {p.label}
               </span>
             </div>
-          ))}
+          )) : (
+             <div className="w-full text-center py-20 text-gray-300 font-bold italic">No usage data for this week</div>
+          )}
         </div>
       </div>
 
