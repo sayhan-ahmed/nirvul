@@ -74,18 +74,45 @@ export default function Navigation() {
     router.push("/");
   };
 
-  const hideOnRoutes = ["/dashboard", "/profile", "/tests", "/suggestions", "/results", "/admin"];
-  if (!user || hideOnRoutes.includes(pathname) || isExamActive) return null;
+  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  if (isExamActive || isAuthPage) return null;
+
+  const dashboardRoutes = ["/dashboard", "/profile", "/tests", "/suggestions", "/results", "/admin"];
+  const isDashboardRoute = dashboardRoutes.some(route => pathname.startsWith(route));
 
   const today = new Date().toLocaleDateString("en-GB", {
     day: "numeric",
     month: "short",
   });
 
+  // ======= RENDER: LOGGED OUT (CLEAN LANDING) =======
+  if (!user) {
+    return (
+      <div className="fixed top-8 left-0 w-full px-8 flex justify-between items-center z-100 max-w-7xl mx-auto -translate-x-1/2">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm cursor-pointer hover:shadow-md transition-all overflow-hidden border border-[#154D57]/20 group-hover:rotate-12">
+            <img
+              src="/logo.svg"
+              alt="Logo"
+              className="w-[70%] h-[70%] object-contain"
+            />
+          </div>
+        </Link>
+        <button 
+          onClick={login}
+          className="bg-[#154D57] px-8 py-3 rounded-full text-white font-black uppercase tracking-widest text-xs hover:bg-[#1a5f6b] shadow-xl shadow-[#154D57]/20 transition-all active:scale-95"
+        >
+          Login
+        </button>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* ======= MOBILE TOP HEADER ======= */}
-      <div className="md:hidden fixed top-0 left-0 w-full z-100 bg-white px-6 py-4 flex items-center border-b border-gray-100 shadow-sm">
+      {!isDashboardRoute && (
+        <div className="md:hidden fixed top-0 left-0 w-full z-100 bg-white px-6 py-4 flex items-center border-b border-gray-100 shadow-sm transition-all duration-300">
         {/* Profile Pic (Left) */}
         <Link
           href="/dashboard"
@@ -105,12 +132,12 @@ export default function Navigation() {
         </Link>
 
         {/* Text Area (Centered) */}
-        <div className="flex-1 flex flex-col items-center justify-center text-center">
-          <h2 className="text-[#1A1A1A] text-xl font-extrabold tracking-tight leading-none mb-1.5">
-            Hello, {user.displayName?.split(" ")[0] || "User"}
+        <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+          <h2 className="text-[#1A1A1A] text-lg font-extrabold tracking-tight leading-none mb-1 line-clamp-1">
+            {user.displayName?.split(" ")[0] || "Student"}
           </h2>
-          <p className="text-gray-400 text-md font-medium tracking-tight">
-            Today {today}.
+          <p className="text-gray-400 text-xs font-medium tracking-tight">
+            {today}
           </p>
         </div>
 
@@ -119,9 +146,11 @@ export default function Navigation() {
           <FiBell className="w-6 h-6 stroke-[1.5]" />
           <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white shadow-sm"></span>
         </button>
-      </div>
-      {/* ======= DESKTOP NAVIGATION ======= */}
-      <div className="hidden md:flex fixed top-8 left-0 w-full px-8 justify-center z-100">
+        </div>
+      )}
+
+      {/* ======= DESKTOP FLOATING NAVIGATION ======= */}
+      <div className="hidden md:flex fixed top-8 left-0 w-full px-8 justify-center z-100 transition-all duration-500 animate-in fade-in slide-in-from-top-4">
         <div className="w-full max-w-6xl bg-[#FEFAF7]/80 backdrop-blur-md p-2 rounded-full flex items-center justify-between shadow-[0_20px_50px_rgba(21,77,87,0.1)] border border-[#154D57]/10 relative">
           {/* Left Side: Logo & Links */}
           <div className="flex items-center gap-6 pl-2">
@@ -135,11 +164,11 @@ export default function Navigation() {
                 className="w-[70%] h-[70%] object-contain"
               />
             </div>
- 
+
             {/* Nav Links */}
             <div className="flex items-center gap-2 ml-2 pl-4 border-l border-[#154D57]/10">
               {NAV_ITEMS.map((item, index) => {
-                const isActive = index === activeIndex;
+                const isActive = item.path === "/" ? pathname === "/" : pathname.startsWith(item.path);
                 return (
                   <button
                     key={item.path + "-desktop"}
