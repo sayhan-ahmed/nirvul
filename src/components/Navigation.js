@@ -36,7 +36,7 @@ const NAV_ITEMS = [
 export default function Navigation() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, login, logout } = useAuth();
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
