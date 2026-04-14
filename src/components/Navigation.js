@@ -75,7 +75,7 @@ export default function Navigation() {
   };
 
   const isAuthPage = pathname === "/login" || pathname === "/signup";
-  if (isExamActive || isAuthPage) return null;
+  if (!user || isExamActive || isAuthPage) return null;
 
   const dashboardRoutes = ["/dashboard", "/profile", "/tests", "/suggestions", "/results", "/admin"];
   const isDashboardRoute = dashboardRoutes.some(route => pathname.startsWith(route));
@@ -85,28 +85,6 @@ export default function Navigation() {
     month: "short",
   });
 
-  // ======= RENDER: LOGGED OUT (CLEAN LANDING) =======
-  if (!user) {
-    return (
-      <div className="fixed top-8 left-0 w-full px-8 flex justify-between items-center z-100 max-w-7xl mx-auto -translate-x-1/2">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm cursor-pointer hover:shadow-md transition-all overflow-hidden border border-[#154D57]/20 group-hover:rotate-12">
-            <img
-              src="/logo.svg"
-              alt="Logo"
-              className="w-[70%] h-[70%] object-contain"
-            />
-          </div>
-        </Link>
-        <button 
-          onClick={login}
-          className="bg-[#154D57] px-8 py-3 rounded-full text-white font-black uppercase tracking-widest text-xs hover:bg-[#1a5f6b] shadow-xl shadow-[#154D57]/20 transition-all active:scale-95"
-        >
-          Login
-        </button>
-      </div>
-    );
-  }
 
   return (
     <>

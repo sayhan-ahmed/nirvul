@@ -15,8 +15,18 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             if (firebaseUser) {
+                // Optimistic UI: Set basic user immediately so app doesn't hang waiting for free backend
+                setUser({
+                    uid: firebaseUser.uid,
+                    email: firebaseUser.email,
+                    displayName: firebaseUser.displayName,
+                    photoURL: firebaseUser.photoURL,
+                    role: 'student'
+                });
+                setLoading(false); // Make UI fast
+
                 try {
-                    // Sync with MongoDB back-end using dynamic API URL
+                    // Sync with MongoDB back-end using dynamic API URL in background
                     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
                     const response = await fetch(`${apiUrl}/api/users`, {
                         method: 'POST',
@@ -33,32 +43,23 @@ export const AuthProvider = ({ children }) => {
                     
                     const mongoUser = await response.json();
                     
-                    setUser({
-                        uid: firebaseUser.uid,
-                        email: firebaseUser.email,
-                        displayName: firebaseUser.displayName,
-                        photoURL: firebaseUser.photoURL,
+                    // Update user with database fields once loaded
+                    setUser(prev => ({
+                        ...prev,
                         role: mongoUser.role || 'student',
                         institution: mongoUser.institution || '',
                         location: mongoUser.location || '',
                         bio: mongoUser.bio || '',
                         guardianName: mongoUser.guardianName || '',
                         guardianContact: mongoUser.guardianContact || ''
-                    });
+                    }));
                 } catch (error) {
-                    console.error('Back-end sync failed', error);
-                    setUser({
-                        uid: firebaseUser.uid,
-                        email: firebaseUser.email,
-                        displayName: firebaseUser.displayName,
-                        photoURL: firebaseUser.photoURL,
-                        role: 'student'
-                    });
+                    console.error('Back-end sync failed or timeout', error);
                 }
             } else {
                 setUser(null);
+                setLoading(false);
             }
-            setLoading(false);
         });
 
         return () => unsubscribe();
