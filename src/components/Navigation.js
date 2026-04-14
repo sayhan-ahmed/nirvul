@@ -128,7 +128,7 @@ export default function Navigation() {
       )}
 
       {/* ======= DESKTOP FLOATING NAVIGATION ======= */}
-      {!pathname.startsWith("/dashboard") && (
+      {!["/dashboard", "/profile", "/admin", "/results"].some(route => pathname.startsWith(route)) && (
         <div className="hidden md:flex fixed top-8 left-0 w-full px-8 justify-center z-100 transition-all duration-500 animate-in fade-in slide-in-from-top-4">
           <div className="w-full max-w-6xl bg-[#FEFAF7]/80 backdrop-blur-md p-2 rounded-full flex items-center justify-between shadow-[0_20px_50px_rgba(21,77,87,0.1)] border border-[#154D57]/10 relative">
             {/* Left Side: Logo & Links */}
